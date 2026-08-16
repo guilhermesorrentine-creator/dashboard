@@ -1,0 +1,3324 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prospecção · Guilherme</title>
+<style>
+/* ============================================================
+   PALETA E TOKENS
+   ============================================================ */
+:root{
+  --bg:        #14100E;
+  --surface:   #1E1815;
+  --surface-2: #2A211C;
+  --border:    #3A2E27;
+  --text:      #F5EFEA;
+  --text-dim:  #A99B91;
+  --rosewood:  #5A0006;
+  --sangria:   #920004;
+  --red:       #D92200;
+  --tangelo:   #F3500A;
+  --orange:    #F37100;
+
+  --verde:     #4FA46B;   /* finalizado / prioridade A / sem site */
+  --cinza-cl:  #A99B91;   /* prioridade C */
+  --cinza-es:  #6B5D54;   /* prioridade D */
+
+  --r-lg: 22px;
+  --r-md: 16px;
+  --r-sm: 10px;
+  --rail: 76px;
+  --sombra: 0 10px 30px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  font-size:14px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+a{color:var(--orange);text-decoration:none}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#4b3a30}
+
+/* ============================================================
+   ESTRUTURA GERAL
+   ============================================================ */
+.app{display:flex;min-height:100vh}
+
+/* --- barra lateral estreita, só ícones --- */
+.rail{
+  width:var(--rail);flex:0 0 var(--rail);
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px 0;gap:8px;
+  position:sticky;top:0;height:100vh;z-index:40;
+}
+.logo{
+  width:44px;height:44px;border-radius:14px;margin-bottom:14px;
+  background:linear-gradient(140deg,var(--tangelo),var(--orange));
+  display:grid;place-items:center;color:#1a0d05;flex:0 0 auto;
+}
+.rail-btn{
+  width:46px;height:46px;border-radius:14px;
+  display:grid;place-items:center;color:var(--text-dim);
+  transition:background .15s,color .15s;position:relative;
+}
+.rail-btn:hover{background:var(--surface-2);color:var(--text)}
+.rail-btn.ativo{
+  background:linear-gradient(140deg,var(--tangelo),var(--orange));
+  color:#1a0d05;box-shadow:0 6px 18px rgba(243,80,10,.35);
+}
+.rail-btn .badge{
+  position:absolute;top:5px;right:5px;min-width:8px;height:8px;border-radius:99px;
+  background:var(--red);border:2px solid var(--surface);
+}
+.rail-sep{flex:1}
+.rail-label{display:none}
+
+.main{flex:1;min-width:0;max-width:100%;display:flex;flex-direction:column}
+
+/* --- topo --- */
+.topbar{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 22px;position:sticky;top:0;z-index:30;
+  background:linear-gradient(180deg,var(--bg) 72%,rgba(20,16,14,0));
+}
+.busca{
+  flex:1;max-width:520px;display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:99px;padding:9px 16px;
+}
+.busca input{background:none;border:none;outline:none;width:100%}
+.busca input::placeholder{color:var(--text-dim)}
+.topo-dir{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill-pend{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:99px;padding:8px 14px;font-size:13px;color:var(--text-dim);
+  cursor:pointer;
+}
+.pill-pend b{color:var(--text)}
+.pill-pend .pt{width:8px;height:8px;border-radius:99px;background:var(--red)}
+.pill-pend.zerado .pt{background:var(--verde)}
+.usuario{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:5px 14px 5px 5px}
+.avatar{
+  width:34px;height:34px;border-radius:99px;flex:0 0 auto;
+  background:linear-gradient(140deg,var(--sangria),var(--tangelo));
+  display:grid;place-items:center;font-weight:700;color:#fff;font-size:14px;
+}
+.usuario .nm{font-size:13px;font-weight:600;line-height:1.1}
+.usuario .sub{font-size:11px;color:var(--text-dim);line-height:1.1}
+
+.conteudo{padding:6px 22px 40px;flex:1}
+
+/* ============================================================
+   CARTÕES E TIPOGRAFIA
+   ============================================================ */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;box-shadow:var(--sombra);
+  min-width:0;max-width:100%;
+}
+.card-tit{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;min-width:0}
+.card-tit h2,.card-tit .sub{min-width:0}
+.card-tit h2{margin:0;font-size:17px;font-weight:650;letter-spacing:-.01em}
+.card-tit .sub{font-size:12px;color:var(--text-dim)}
+h1.pagina{font-size:24px;margin:6px 0 18px;font-weight:680;letter-spacing:-.02em}
+
+/* --- KPIs --- */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:16px 18px;cursor:pointer;
+  transition:border-color .15s,transform .15s;
+}
+.kpi:hover{border-color:#54423a;transform:translateY(-2px)}
+.kpi .rot{font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:7px}
+.kpi .val{font-size:28px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+.kpi .pt{width:9px;height:9px;border-radius:99px;background:var(--cinza-es)}
+.kpi.destaque{
+  background:linear-gradient(150deg,rgba(217,34,0,.22),var(--surface) 62%);
+  border-color:rgba(217,34,0,.5);
+}
+.kpi.destaque .val{color:#FF8A5C}
+.kpi.destaque .pt{background:var(--red);box-shadow:0 0 0 4px rgba(217,34,0,.18)}
+
+/* --- grade home --- */
+.home-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.home-esq{display:grid;gap:18px;min-width:0}
+.home-dir{display:grid;gap:18px;min-width:0}
+
+/* --- alternador de período --- */
+.periodos{display:flex;gap:4px;background:var(--surface-2);border-radius:99px;padding:4px;margin-left:auto}
+.periodos button{
+  border-radius:99px;padding:6px 14px;font-size:12.5px;color:var(--text-dim);
+  transition:background .15s,color .15s;white-space:nowrap;
+}
+.periodos button.ativo{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+/* --- gráfico --- */
+.gwrap{position:relative;min-width:0;max-width:100%}
+.gwrap svg{display:block;width:100%;max-width:100%;height:auto}
+.tipgraf{
+  position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);
+  background:#fff;color:#14100E;border-radius:12px;padding:8px 12px;
+  font-size:12px;font-weight:600;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.45);transition:opacity .1s;z-index:5;
+}
+.tipgraf .d{font-weight:500;color:#7a6a60;font-size:11px}
+.legenda{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--text-dim)}
+.legenda i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px}
+
+/* --- chips de estágio --- */
+.chips-funil{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.chip-funil{
+  display:flex;align-items:center;gap:8px;background:var(--surface-2);
+  border:1px solid var(--border);border-radius:99px;padding:6px 13px;font-size:12.5px;
+  color:var(--text-dim);cursor:pointer;transition:border-color .15s;
+}
+.chip-funil:hover{border-color:#54423a}
+.chip-funil b{color:var(--text);font-size:13px}
+.chip-funil i{width:8px;height:8px;border-radius:99px;display:inline-block}
+
+/* --- lista de hoje --- */
+.hoje-lista{display:flex;flex-direction:column;gap:8px}
+.hoje-item{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface-2);border:1px solid transparent;
+  border-radius:var(--r-md);padding:12px 14px;cursor:pointer;
+  transition:border-color .15s;
+}
+.hoje-item:hover{border-color:#54423a}
+.hoje-item .atraso{
+  flex:0 0 62px;text-align:center;border-radius:12px;padding:7px 4px;
+  background:rgba(217,34,0,.14);border:1px solid rgba(217,34,0,.35);
+}
+.hoje-item .atraso .n{font-size:17px;font-weight:700;color:#FF8A5C;line-height:1}
+.hoje-item .atraso .u{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em}
+.hoje-item.novo .atraso{background:rgba(243,113,0,.12);border-color:rgba(243,113,0,.32)}
+.hoje-item.novo .atraso .n{color:var(--orange);font-size:12px;font-weight:700;padding-top:3px}
+.hoje-item .info{flex:1;min-width:0}
+.hoje-item .nome{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hoje-item .meta{font-size:12px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vazio{color:var(--text-dim);font-size:13px;padding:22px;text-align:center;background:var(--surface-2);border-radius:var(--r-md)}
+
+/* --- barras horizontais --- */
+.barras{display:flex;flex-direction:column;gap:11px}
+.barra .lin{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px}
+.barra .lin span:last-child{color:var(--text-dim)}
+.barra .trilho{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.barra .fill{height:100%;border-radius:99px;transition:width .3s}
+
+/* --- atividades --- */
+.ativ{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid rgba(58,46,39,.6);cursor:pointer}
+.ativ:last-child{border-bottom:none}
+.ativ .ic{
+  width:34px;height:34px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--surface-2);font-size:11px;font-weight:700;color:var(--orange);
+}
+.ativ .tx{flex:1;min-width:0}
+.ativ .tx b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ativ .tx small{color:var(--text-dim);font-size:11.5px}
+.ativ .dt{font-size:11.5px;color:var(--text-dim);white-space:nowrap}
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:99px;padding:10px 18px;font-size:13.5px;font-weight:600;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--text);
+  transition:filter .15s,border-color .15s,background .15s;white-space:nowrap;
+}
+.btn:hover{filter:brightness(1.14)}
+.btn-primario{
+  background:linear-gradient(120deg,var(--tangelo),var(--orange));
+  border-color:transparent;color:#180b03;
+  box-shadow:0 6px 18px rgba(243,80,10,.28);
+}
+.btn-sm{padding:7px 13px;font-size:12.5px}
+.btn-blk{width:100%}
+.btn-perigo{border-color:rgba(217,34,0,.5);color:#FF8A5C;background:rgba(217,34,0,.1)}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+
+/* ============================================================
+   FILTROS / LEADS
+   ============================================================ */
+.filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.sel{
+  background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  padding:9px 14px;font-size:13px;outline:none;cursor:pointer;
+  appearance:none;padding-right:32px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A99B91' stroke-width='3'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 13px center;
+}
+.sel option{background:var(--surface-2);color:var(--text)}
+.toggle-vis{display:flex;gap:3px;background:var(--surface-2);border-radius:99px;padding:3px;margin-left:auto}
+.toggle-vis button{border-radius:99px;padding:7px 12px;color:var(--text-dim);display:grid;place-items:center}
+.toggle-vis button.ativo{background:var(--surface);color:var(--text)}
+.contagem{font-size:12.5px;color:var(--text-dim);margin-bottom:12px}
+.contagem b{color:var(--text)}
+
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px}
+.lead-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid var(--cinza-es);
+  border-radius:var(--r-md);padding:16px;cursor:pointer;
+  transition:transform .15s,border-color .15s;display:flex;flex-direction:column;gap:10px;
+}
+.lead-card:hover{transform:translateY(-3px);border-color:#54423a}
+.lead-card .topo{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.lead-card h3{margin:0;font-size:14.5px;font-weight:650;line-height:1.3}
+.lead-card .sub{font-size:12px;color:var(--text-dim);margin-top:3px}
+.prio-tag{
+  flex:0 0 auto;width:24px;height:24px;border-radius:9px;display:grid;place-items:center;
+  font-size:12px;font-weight:700;color:#140f0c;
+}
+.nota{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--text-dim)}
+.nota b{color:var(--text)}
+.estrela{color:var(--orange)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:4px 9px;border-radius:99px;border:1px solid transparent;
+}
+.t-sem{background:rgba(79,164,107,.16);color:#7ED3A0;border-color:rgba(79,164,107,.4)}
+.t-tem{background:var(--surface-2);color:var(--text-dim);border-color:var(--border)}
+.t-ver{background:rgba(243,113,0,.14);color:#F7A24F;border-color:rgba(243,113,0,.4)}
+.estagio{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-dim);margin-top:auto;padding-top:4px}
+.estagio i{width:8px;height:8px;border-radius:99px;flex:0 0 auto}
+
+/* --- tabela --- */
+.tab-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:820px}
+th{
+  text-align:left;padding:13px 14px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--text-dim);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;
+  position:sticky;top:0;background:var(--surface);
+}
+td{padding:12px 14px;border-bottom:1px solid rgba(58,46,39,.55)}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:none}
+.td-nome{font-weight:600}
+.td-nome small{display:block;color:var(--text-dim);font-weight:400;font-size:11.5px}
+
+/* ============================================================
+   PAINEL DE DETALHE
+   ============================================================ */
+.overlay{
+  position:fixed;inset:0;background:rgba(10,7,5,.62);backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;transition:opacity .22s;z-index:60;
+}
+.overlay.aberto{opacity:1;pointer-events:auto}
+.painel{
+  position:fixed;top:0;right:0;height:100vh;width:min(520px,100%);
+  background:var(--surface);border-left:1px solid var(--border);
+  transform:translateX(102%);transition:transform .28s cubic-bezier(.22,1,.36,1);
+  z-index:70;display:flex;flex-direction:column;
+}
+.painel.aberto{transform:translateX(0)}
+.painel-topo{
+  padding:20px 22px 14px;border-bottom:1px solid var(--border);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.painel-topo h2{margin:0;font-size:18px;font-weight:660;line-height:1.25}
+.painel-corpo{flex:1;overflow-y:auto;padding:18px 22px 40px;display:flex;flex-direction:column;gap:18px}
+.fechar{
+  width:34px;height:34px;border-radius:99px;background:var(--surface-2);
+  display:grid;place-items:center;color:var(--text-dim);flex:0 0 auto;margin-left:auto;
+}
+.fechar:hover{color:var(--text)}
+.bloco{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:15px}
+.bloco h4{margin:0 0 11px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);font-weight:650}
+.linha-campo{display:flex;gap:12px;padding:7px 0;font-size:13px;border-bottom:1px solid rgba(58,46,39,.5)}
+.linha-campo:last-child{border-bottom:none}
+.linha-campo .rot{color:var(--text-dim);flex:0 0 132px}
+.linha-campo .vl{flex:1;min-width:0;word-break:break-word}
+.msg-box{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:11px}
+.msg-box.enviada{border-color:rgba(79,164,107,.45)}
+.msg-box.pendente{border-color:rgba(217,34,0,.5);box-shadow:0 0 0 3px rgba(217,34,0,.08)}
+.msg-cab{display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.msg-cab .n{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-dim)}
+.msg-selo{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:.04em}
+.selo-ok{background:rgba(79,164,107,.16);color:#7ED3A0}
+.selo-pend{background:rgba(217,34,0,.16);color:#FF8A5C}
+.msg-txt{
+  white-space:pre-wrap;font-size:12.8px;line-height:1.55;color:var(--text-dim);
+  max-height:120px;overflow:hidden;position:relative;transition:max-height .2s;
+}
+.msg-txt.aberto{max-height:none}
+.msg-mais{font-size:11.5px;color:var(--orange);margin-top:6px}
+.msg-acoes{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}
+textarea.obs{
+  width:100%;min-height:88px;resize:vertical;background:var(--bg);
+  border:1px solid var(--border);border-radius:var(--r-sm);padding:11px;
+  outline:none;font-size:13px;line-height:1.5;
+}
+textarea.obs:focus{border-color:var(--orange)}
+.salvo{font-size:11.5px;color:var(--verde);opacity:0;transition:opacity .2s}
+.salvo.on{opacity:1}
+.aviso-tel{
+  display:flex;gap:9px;align-items:flex-start;font-size:12px;color:#F7A24F;
+  background:rgba(243,113,0,.1);border:1px solid rgba(243,113,0,.3);
+  border-radius:var(--r-sm);padding:9px 11px;margin-bottom:11px;
+}
+.hist-item{display:flex;justify-content:space-between;font-size:12.5px;padding:6px 0;border-bottom:1px solid rgba(58,46,39,.5)}
+.hist-item:last-child{border-bottom:none}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(10,7,5,.7);backdrop-filter:blur(4px);
+  display:none;place-items:center;z-index:90;padding:20px;
+}
+.modal-bg.aberto{display:grid}
+.modal{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:26px;width:min(430px,100%);box-shadow:0 24px 60px rgba(0,0,0,.6);
+}
+.modal h3{margin:0 0 10px;font-size:18px;font-weight:660}
+.modal p{margin:0 0 18px;color:var(--text-dim);font-size:13.5px;line-height:1.55}
+.modal-acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.modal input[type=text]{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:11px;outline:none;margin-bottom:16px;
+}
+.modal input[type=text]:focus{border-color:var(--orange)}
+
+/* --- toast --- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);
+  background:var(--surface);border:1px solid var(--border);border-radius:99px;
+  padding:12px 22px;font-size:13.5px;font-weight:600;z-index:120;
+  box-shadow:0 12px 34px rgba(0,0,0,.5);transition:transform .28s cubic-bezier(.22,1,.36,1);
+  display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);
+}
+.toast.on{transform:translate(-50%,0)}
+.toast i{width:8px;height:8px;border-radius:99px;background:var(--verde);flex:0 0 auto}
+.toast.erro i{background:var(--red)}
+
+/* ============================================================
+   TELA DE LIBERAÇÃO (código de acesso)
+   ============================================================ */
+.trava{min-height:100vh;display:grid;place-items:center;padding:28px}
+.trava-cx{width:min(360px,100%);text-align:center}
+.trava-cx .marca{
+  width:66px;height:66px;border-radius:22px;margin:0 auto 22px;
+  background:linear-gradient(140deg,var(--tangelo),var(--orange));
+  display:grid;place-items:center;color:#1a0d05;
+  box-shadow:0 14px 40px rgba(243,80,10,.32);
+}
+.trava-cx h1{font-size:24px;margin:0 0 8px;letter-spacing:-.02em}
+.trava-cx p{color:var(--text-dim);font-size:13.5px;margin:0 0 22px}
+.trava-cx input{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:15px;font-size:20px;text-align:center;
+  letter-spacing:.35em;text-transform:uppercase;outline:none;font-weight:700;
+}
+.trava-cx input:focus{border-color:var(--orange)}
+.trava-cx input.erro{border-color:var(--red);animation:treme .35s}
+@keyframes treme{
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-7px)}
+  40%,80%{transform:translateX(7px)}
+}
+.trava-erro{font-size:12.5px;color:#FF8A5C;margin-top:10px;min-height:18px}
+.trava-lembrar{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:12.5px;color:var(--text-dim);margin-top:16px;cursor:pointer;user-select:none;
+}
+.trava-lembrar input{width:auto;letter-spacing:0;accent-color:var(--tangelo)}
+
+/* ============================================================
+   TELA INICIAL VAZIA
+   ============================================================ */
+.inicio{min-height:100vh;display:grid;place-items:center;padding:28px}
+.inicio-cx{max-width:560px;text-align:center}
+.inicio-cx .marca{
+  width:66px;height:66px;border-radius:22px;margin:0 auto 22px;
+  background:linear-gradient(140deg,var(--tangelo),var(--orange));
+  display:grid;place-items:center;color:#1a0d05;
+  box-shadow:0 14px 40px rgba(243,80,10,.32);
+}
+.inicio-cx h1{font-size:29px;margin:0 0 12px;letter-spacing:-.02em}
+.inicio-cx p{color:var(--text-dim);font-size:14.5px;line-height:1.65;margin:0 0 12px}
+.inicio-acoes{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.passos{
+  text-align:left;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px 22px;margin-top:30px;
+}
+.passos ol{margin:0;padding-left:20px;color:var(--text-dim);font-size:13.5px;line-height:1.9}
+.passos ol b{color:var(--text)}
+
+/* ============================================================
+   CONFIGURAÇÕES
+   ============================================================ */
+.cfg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start}
+.cfg-linha{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(58,46,39,.55)}
+.cfg-linha:last-child{border-bottom:none}
+.cfg-linha .tx{flex:1}
+.cfg-linha .tx b{display:block;font-size:13.5px}
+.cfg-linha .tx small{color:var(--text-dim);font-size:12px}
+.cfg-linha input[type=number]{
+  width:74px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:9px;outline:none;text-align:center;font-weight:600;
+}
+.cfg-linha input[type=number]:focus{border-color:var(--orange)}
+.nota-aviso{
+  background:rgba(217,34,0,.09);border:1px solid rgba(217,34,0,.32);
+  border-radius:var(--r-md);padding:15px;font-size:13px;line-height:1.6;color:#FFC1A8;
+}
+.nota-aviso b{color:#FF8A5C}
+
+/* ============================================================
+   FINANCEIRO
+   ============================================================ */
+.fin-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.kpi.verde{background:linear-gradient(150deg,rgba(79,164,107,.16),var(--surface) 62%);border-color:rgba(79,164,107,.42)}
+.kpi.verde .val{color:#7ED3A0}
+.kpi.verde .pt{background:var(--verde)}
+.kpi .moeda{font-size:24px}
+.kpi .rodape{font-size:11px;color:var(--text-dim);margin-top:5px}
+
+/* barras de faturamento */
+.fatura-svg{display:block;width:100%;max-width:100%;height:auto}
+
+/* linhas de cobrança */
+.cob-item{
+  display:flex;align-items:center;gap:13px;
+  background:var(--surface-2);border:1px solid transparent;
+  border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;
+}
+.cob-item:hover{border-color:#54423a}
+.cob-item .venc{
+  flex:0 0 60px;text-align:center;border-radius:12px;padding:7px 4px;
+  background:var(--surface);border:1px solid var(--border);
+}
+.cob-item .venc .n{font-size:16px;font-weight:700;line-height:1}
+.cob-item .venc .u{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em}
+.cob-item.atrasada .venc{background:rgba(217,34,0,.14);border-color:rgba(217,34,0,.38)}
+.cob-item.atrasada .venc .n{color:#FF8A5C}
+.cob-item.paga{opacity:.6}
+.cob-item.paga .venc{background:rgba(79,164,107,.12);border-color:rgba(79,164,107,.35)}
+.cob-item .info{flex:1;min-width:0}
+.cob-item .info b{display:block;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cob-item .info small{color:var(--text-dim);font-size:11.5px}
+.cob-item .vlr{font-size:15px;font-weight:700;white-space:nowrap}
+.cob-item .acoes{display:flex;gap:6px;flex:0 0 auto}
+
+/* contratos */
+.ctr-card{
+  background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--verde);
+  border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:11px;
+}
+.ctr-card.encerrado{border-left-color:var(--cinza-es);opacity:.72}
+.ctr-card h3{margin:0;font-size:14.5px;font-weight:650}
+.ctr-card .sub{font-size:12px;color:var(--text-dim);margin-top:3px}
+.ctr-valores{display:flex;gap:18px;flex-wrap:wrap}
+.ctr-valores div{font-size:12px;color:var(--text-dim)}
+.ctr-valores b{display:block;font-size:15.5px;color:var(--text);font-weight:700;margin-top:2px}
+.ctr-prog{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.ctr-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--verde),#7ED3A0);border-radius:99px}
+
+/* formulário */
+.form-lin{display:flex;gap:12px;margin-bottom:13px;flex-wrap:wrap}
+.form-cp{flex:1;min-width:130px}
+.form-cp label{display:block;font-size:11.5px;color:var(--text-dim);margin-bottom:5px;font-weight:600}
+.form-cp input,.form-cp select,.form-cp textarea{
+  width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:10px 11px;outline:none;font-size:13.5px;
+}
+.form-cp input:focus,.form-cp select:focus,.form-cp textarea:focus{border-color:var(--orange)}
+.form-cp select{appearance:none;cursor:pointer}
+.form-cp small{display:block;font-size:11px;color:var(--text-dim);margin-top:4px}
+.modal.largo{width:min(560px,100%);max-height:88vh;overflow-y:auto}
+.form-sec{
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);
+  font-weight:650;margin:20px 0 11px;padding-top:15px;border-top:1px solid var(--border);
+}
+.form-sec:first-of-type{margin-top:8px;padding-top:0;border-top:none}
+.previa{
+  background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:12px;font-size:12.5px;color:var(--text-dim);line-height:1.6;margin-bottom:6px;
+}
+.previa b{color:var(--text)}
+
+/* planos / links do asaas */
+.plano-lin{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid rgba(58,46,39,.55)}
+.plano-lin:last-child{border-bottom:none}
+.plano-lin .tx{flex:1;min-width:0}
+.plano-lin .tx b{display:block;font-size:13.5px}
+.plano-lin .tx small{color:var(--text-dim);font-size:11.5px;word-break:break-all}
+.selo-fin{
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;
+}
+.sf-paga{background:rgba(79,164,107,.16);color:#7ED3A0}
+.sf-aberta{background:rgba(243,113,0,.14);color:#F7A24F}
+.sf-atrasada{background:rgba(217,34,0,.16);color:#FF8A5C}
+.sf-enviada{background:var(--surface);color:var(--text-dim);border:1px solid var(--border)}
+
+/* ============================================================
+   RESPONSIVO — no celular a lateral vira menu inferior
+   ============================================================ */
+@media (max-width:980px){
+  /* minmax(0,1fr) e não 1fr: com 1fr o mínimo da coluna é o min-content
+     do gráfico, e isso estoura a largura da página inteira no celular */
+  .home-grid{grid-template-columns:minmax(0,1fr)}
+  .kpis,.fin-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .app{flex-direction:column}
+  .rail{
+    width:auto;height:auto;flex:0 0 auto;position:fixed;bottom:0;top:auto;left:0;right:0;
+    flex-direction:row;justify-content:space-around;align-items:center;
+    padding:8px 8px calc(8px + env(safe-area-inset-bottom));gap:4px;
+    border-right:none;border-top:1px solid var(--border);
+    box-shadow:0 -8px 26px rgba(0,0,0,.45);
+  }
+  .logo,.rail-sep{display:none}
+  .rail-btn{width:auto;flex:1;height:48px;flex-direction:column;gap:2px;border-radius:14px}
+  .rail-label{display:block;font-size:10px;font-weight:600}
+  .main{padding-bottom:80px}
+  .topbar{padding:12px 14px;flex-wrap:wrap}
+  .busca{order:3;flex:1 1 100%;max-width:none}
+  .topo-dir{margin-left:auto}
+  .usuario .nm,.usuario .sub{display:none}
+  .usuario{padding:5px}
+  .conteudo{padding:4px 14px 30px}
+  .kpis,.fin-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .kpi .val{font-size:23px}
+  .kpi .moeda{font-size:18px}
+  .cob-item{flex-wrap:wrap}
+  .cob-item .info{flex:1 1 55%}
+  .cob-item .acoes{width:100%;justify-content:flex-end}
+  .rail-btn{min-width:0}
+  .hoje-item .btn{flex:0 0 auto}
+  .periodos button{padding:6px 10px;font-size:12px}
+  .card{padding:16px;border-radius:var(--r-md)}
+  h1.pagina{font-size:21px}
+  .painel{width:100%;border-left:none}
+  .grade{grid-template-columns:1fr}
+  .periodos{width:100%;margin-left:0;justify-content:space-between}
+  .toggle-vis{margin-left:0}
+  .linha-campo{flex-direction:column;gap:2px}
+  .linha-campo .rot{flex:none}
+  .toast{bottom:88px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TELA DE LIBERAÇÃO — pede o código antes de mostrar qualquer coisa
+     ============================================================ -->
+<div class="trava" id="tela-trava" style="display:none">
+  <div class="trava-cx">
+    <div class="marca">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+      </svg>
+    </div>
+    <h1>Painel bloqueado</h1>
+    <p>Digite o código de liberação para entrar.</p>
+    <input type="password" id="trava-codigo" maxlength="20" autocomplete="off" spellcheck="false" placeholder="•••">
+    <div class="trava-erro" id="trava-erro"></div>
+    <button class="btn btn-primario btn-blk" id="trava-entrar" style="margin-top:6px">Liberar</button>
+    <label class="trava-lembrar">
+      <input type="checkbox" id="trava-lembrar">
+      Não pedir de novo neste navegador
+    </label>
+  </div>
+</div>
+
+<!-- ============================================================
+     TELA INICIAL (aparece quando não há nada no localStorage)
+     ============================================================ -->
+<div class="inicio" id="tela-inicio" style="display:none">
+  <div class="inicio-cx">
+    <div class="marca">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 17l5-5 4 3 8-8"/><path d="M14 7h6v6"/>
+      </svg>
+    </div>
+    <h1>Painel de prospecção</h1>
+    <p>Olá, Guilherme. Este painel começa vazio de propósito — ele é alimentado pela sua planilha.</p>
+    <p>Importe o arquivo <b>Leads_Sites_4cidades.xlsx</b> (aba <b>Leads</b>) para carregar os 304 leads. Depois disso o painel abre direto com os dados salvos, sem precisar importar de novo.</p>
+    <div class="inicio-acoes">
+      <button class="btn btn-primario" data-acao="importar-xlsx">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        Importar planilha
+      </button>
+      <button class="btn" data-acao="importar-json">Restaurar backup JSON</button>
+    </div>
+    <div class="passos">
+      <ol>
+        <li>Clique em <b>Importar planilha</b> e escolha o .xlsx.</li>
+        <li>O painel calcula sozinho quem está <b>vencido</b> para follow-up.</li>
+        <li>Você abre o WhatsApp pelo botão e <b>confirma o envio</b> — nada é disparado automaticamente.</li>
+        <li>Faça <b>Exportar JSON</b> de vez em quando: os dados moram no navegador e somem se você limpar o histórico.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APLICAÇÃO
+     ============================================================ -->
+<div class="app" id="app" style="display:none">
+
+  <!-- barra lateral estreita, só ícones -->
+  <aside class="rail">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 8-8"/><path d="M14 7h6v6"/></svg>
+    </div>
+    <button class="rail-btn ativo" data-tela="home" title="Home">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-7 9 7v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><path d="M9 21V12h6v9"/></svg>
+      <span class="rail-label">Home</span>
+      <span class="badge" id="rail-badge" style="display:none"></span>
+    </button>
+    <button class="rail-btn" data-tela="leads" title="Leads">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13A4 4 0 0119 7a4 4 0 01-3 3.87"/></svg>
+      <span class="rail-label">Leads</span>
+    </button>
+    <button class="rail-btn" data-tela="financeiro" title="Financeiro">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"/></svg>
+      <span class="rail-label">Grana</span>
+      <span class="badge" id="rail-badge-fin" style="display:none"></span>
+    </button>
+    <div class="rail-sep"></div>
+    <button class="rail-btn" data-tela="config" title="Configurações">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.36.44.63.79.76H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span class="rail-label">Ajustes</span>
+    </button>
+  </aside>
+
+  <div class="main">
+    <!-- topo -->
+    <header class="topbar">
+      <div class="busca">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A99B91" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.1-4.1"/></svg>
+        <input type="text" id="busca-topo" placeholder="Buscar por nome, endereço ou telefone…" autocomplete="off">
+      </div>
+      <div class="topo-dir">
+        <button class="pill-pend" id="pill-pend" title="Ir para a fila de hoje">
+          <span class="pt"></span><b id="pend-n">0</b> pendentes
+        </button>
+        <div class="usuario">
+          <div class="avatar">G</div>
+          <div>
+            <div class="nm">Guilherme</div>
+            <div class="sub">Prospecção</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="conteudo" id="conteudo"></main>
+  </div>
+</div>
+
+<!-- painel lateral de detalhe -->
+<div class="overlay" id="overlay"></div>
+<aside class="painel" id="painel" aria-hidden="true"></aside>
+
+<!-- modal genérico -->
+<div class="modal-bg" id="modal-bg"><div class="modal" id="modal"></div></div>
+
+<!-- toast -->
+<div class="toast" id="toast"><i></i><span></span></div>
+
+<!-- inputs de arquivo escondidos -->
+<input type="file" id="file-xlsx" accept=".xlsx,.xlsm" style="display:none">
+<input type="file" id="file-json" accept=".json,application/json" style="display:none">
+
+<script>
+"use strict";
+/* ============================================================================
+   PAINEL DE PROSPECÇÃO — Guilherme
+   Arquivo único, sem servidor, sem build, sem backend.
+   Persistência: localStorage. Backup: exportar/importar JSON.
+   Nenhuma mensagem é enviada automaticamente em hipótese alguma.
+   ========================================================================== */
+
+const CHAVE_LS   = "gp_prospeccao_v1";  // chave do localStorage
+const CDN_SHEETJS = "https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js";
+
+/* ---------------------------------------------------------------------------
+   0. LIBERAÇÃO POR CÓDIGO
+   O código não fica escrito no arquivo — só o hash dele (FNV-1a).
+   Isso barra o curioso que abre o painel ou lê o fonte. NÃO é cofre:
+   os dados continuam legíveis no localStorage para quem souber usar
+   as ferramentas do navegador. Para sigilo de verdade, não deixe o
+   arquivo em máquina compartilhada.
+   ------------------------------------------------------------------------ */
+
+const HASH_CODIGO   = "1kw2baz";              // hash do código de liberação
+const CHAVE_LIBERADO = "gp_liberado_v1";      // marca de "não pedir de novo"
+
+/** Hash FNV-1a do código, ignorando caixa e espaços das pontas. */
+function hashCodigo(s){
+  let h = 2166136261;
+  const t = String(s || "").trim().toUpperCase();
+  for(let i = 0; i < t.length; i++){
+    h ^= t.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h.toString(36);
+}
+
+function estaLiberado(){
+  return sessionStorage.getItem(CHAVE_LIBERADO) === HASH_CODIGO
+      || localStorage.getItem(CHAVE_LIBERADO)  === HASH_CODIGO;
+}
+
+function mostrarTrava(){
+  $("#tela-trava").style.display  = "grid";
+  $("#tela-inicio").style.display = "none";
+  $("#app").style.display         = "none";
+  const inp = $("#trava-codigo");
+  inp.value = "";
+  setTimeout(() => inp.focus(), 60);
+}
+
+function tentarLiberar(){
+  const inp  = $("#trava-codigo");
+  const erro = $("#trava-erro");
+  if(hashCodigo(inp.value) === HASH_CODIGO){
+    // sessionStorage: vale até fechar a aba. localStorage: vale para sempre.
+    sessionStorage.setItem(CHAVE_LIBERADO, HASH_CODIGO);
+    if($("#trava-lembrar").checked) localStorage.setItem(CHAVE_LIBERADO, HASH_CODIGO);
+    erro.textContent = "";
+    $("#tela-trava").style.display = "none";
+    iniciarApp();
+  } else {
+    erro.textContent = "Código incorreto.";
+    inp.classList.remove("erro");
+    void inp.offsetWidth;            // reinicia a animação de tremida
+    inp.classList.add("erro");
+    inp.select();
+  }
+}
+
+/** Volta a pedir o código na próxima abertura (e bloqueia agora). */
+function bloquearPainel(){
+  sessionStorage.removeItem(CHAVE_LIBERADO);
+  localStorage.removeItem(CHAVE_LIBERADO);
+  fecharPainel();
+  mostrarTrava();
+}
+
+/* Mensagem padrão de cobrança. {campos} são trocados na hora do envio. */
+const MSG_COBRANCA_PADRAO =
+  "Olá {cliente}, tudo bem?\n\n" +
+  "Segue o link para o pagamento de {descricao} — {valor}, com vencimento em {vencimento}:\n\n" +
+  "{link}\n\n" +
+  "Qualquer dúvida é só me chamar por aqui. Obrigado!";
+
+/* Estado em memória. Espelha o que está no localStorage. */
+let estado = {
+  leads:     [],
+  contratos: [],                                  // clientes fechados + suas cobranças
+  planos:    [],                                  // links de pagamento do Asaas
+  config: {
+    prazo2: 2, prazo3: 5, prazo4: 10,             // dias corridos da régua de follow-up
+    mesesGerar: 12,                               // quantos meses de mensalidade projetar à frente
+    msgCobranca: MSG_COBRANCA_PADRAO
+  },
+  importadoEm: null
+};
+
+/* Estado só de interface (não persiste). */
+let ui = {
+  tela: "home",
+  periodo: 30,                                    // 7 | 30 | 90 | 0 (tudo)
+  visao: "grade",                                 // grade | tabela
+  busca: "",
+  filtros: { cidade:"", nicho:"", prioridade:"", site:"", estagio:"" },
+  ordem: "oportunidade",
+  leadAberto: null
+};
+
+/* ---------------------------------------------------------------------------
+   1. UTILIDADES
+   ------------------------------------------------------------------------ */
+
+const $  = (s, e=document) => e.querySelector(s);
+const $$ = (s, e=document) => Array.from(e.querySelectorAll(s));
+
+/** Escapa texto para injeção segura em HTML. */
+function esc(v){
+  return String(v == null ? "" : v)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+
+/** Converte um Date para ISO curto (AAAA-MM-DD) no fuso local. */
+function isoDe(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+/** Data de hoje em ISO curto (AAAA-MM-DD), no fuso local. */
+function hojeISO(){ return isoDe(new Date()); }
+
+/**
+ * Soma meses a uma data, respeitando o dia de vencimento.
+ * Dia 31 em mês de 30 cai no último dia do mês, não vira o mês seguinte.
+ */
+function addMeses(iso, n, diaFixo){
+  const base = paraData(iso);
+  const dia  = diaFixo || base.getDate();
+  const alvo = new Date(base.getFullYear(), base.getMonth() + n, 1);
+  const ultimoDia = new Date(alvo.getFullYear(), alvo.getMonth() + 1, 0).getDate();
+  alvo.setDate(Math.min(dia, ultimoDia));
+  return isoDe(alvo);
+}
+
+/** Valor em reais: 1800 -> "R$ 1.800,00". */
+function fmtMoeda(v){
+  return (Number(v) || 0).toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+}
+
+/** Valor compacto para KPI: 1800 -> "R$ 1.800". */
+function fmtMoedaCurta(v){
+  const n = Number(v) || 0;
+  return "R$ " + n.toLocaleString("pt-BR", { minimumFractionDigits:0, maximumFractionDigits:0 });
+}
+
+/** Mês de uma data ISO: "2026-08-16" -> "2026-08". */
+function mesDe(iso){ return String(iso || "").slice(0,7); }
+
+/** Rótulo curto do mês: "2026-08" -> "ago/26". */
+function fmtMes(ym){
+  const [a,m] = ym.split("-").map(Number);
+  return `${MESES[m-1]}/${String(a).slice(2)}`;
+}
+
+/** Id único para contratos, cobranças e planos. */
+function idNovo(prefixo){
+  return prefixo + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+/** Converte "AAAA-MM-DD" para Date local à meia-noite. */
+function paraData(iso){
+  const [a,m,d] = String(iso).slice(0,10).split("-").map(Number);
+  return new Date(a, m-1, d);
+}
+
+/** Diferença em dias corridos entre duas datas ISO (b - a). */
+function diasEntre(isoA, isoB){
+  return Math.round((paraData(isoB) - paraData(isoA)) / 86400000);
+}
+
+/** Formata "AAAA-MM-DD" como "12 fev 2026". */
+const MESES = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+function fmtData(iso){
+  if(!iso) return "—";
+  const d = paraData(iso);
+  return `${String(d.getDate()).padStart(2,"0")} ${MESES[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/** Texto relativo curto: hoje / ontem / há N dias. */
+function fmtRelativo(iso){
+  const n = diasEntre(iso, hojeISO());
+  if(n === 0) return "hoje";
+  if(n === 1) return "ontem";
+  if(n < 0)   return fmtData(iso);
+  return `há ${n} dias`;
+}
+
+/** Normaliza texto: minúsculo, sem acento — para busca e para casar cabeçalhos. */
+function norm(s){
+  return String(s == null ? "" : s)
+    .normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .toLowerCase().trim();
+}
+
+/** Slug estável para compor a chave do lead. */
+function slug(s){
+  return norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+}
+
+/**
+ * Classifica o telefone e decide se dá para mandar WhatsApp.
+ * Regra combinada: 0800/números iniciados em 0 não têm WhatsApp (link seria inválido);
+ * fixo tem link, mas com aviso de que pode não existir do outro lado.
+ */
+function classificaTelefone(bruto){
+  const d = String(bruto == null ? "" : bruto).replace(/\D/g,"");
+  if(!d)                                  return { digitos:"",  tipo:"sem",      wa:null,       rotulo:"sem telefone" };
+  if(d[0] === "0")                        return { digitos:d,   tipo:"especial", wa:null,       rotulo:"0800 / número especial" };
+  if(d.length === 13 && d.startsWith("55")) return { digitos:d, tipo:"movel",    wa:d,          rotulo:"celular" };
+  if(d.length === 11)                     return { digitos:d,   tipo:"movel",    wa:"55"+d,     rotulo:"celular" };
+  if(d.length === 10)                     return { digitos:d,   tipo:"fixo",     wa:"55"+d,     rotulo:"telefone fixo" };
+  return { digitos:d, tipo:"outro", wa:"55"+d, rotulo:"formato incomum" };
+}
+
+/** Telefone formatado para leitura. */
+function fmtTelefone(bruto){
+  const d = String(bruto||"").replace(/\D/g,"");
+  if(d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if(d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return String(bruto||"—");
+}
+
+/** Toast curto no rodapé. */
+let toastTimer = null;
+function toast(msg, erro){
+  const t = $("#toast");
+  t.classList.toggle("erro", !!erro);
+  $("span", t).textContent = msg;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove("on"), 2800);
+}
+
+/**
+ * Modal de confirmação em Promise.
+ * opts: {titulo, texto, ok, cancelar, perigo, exigirTexto}
+ */
+function confirmar(opts){
+  return new Promise(resolve => {
+    const bg = $("#modal-bg"), m = $("#modal");
+    const precisaTexto = !!opts.exigirTexto;
+    m.innerHTML = `
+      <h3>${esc(opts.titulo)}</h3>
+      <p>${opts.texto}</p>
+      ${precisaTexto ? `<input type="text" id="modal-input" placeholder="Digite ${esc(opts.exigirTexto)}" autocomplete="off">` : ""}
+      <div class="modal-acoes">
+        <button class="btn" id="modal-nao">${esc(opts.cancelar || "Cancelar")}</button>
+        <button class="btn ${opts.perigo ? "btn-perigo" : "btn-primario"}" id="modal-sim" ${precisaTexto ? "disabled" : ""}>${esc(opts.ok || "Confirmar")}</button>
+      </div>`;
+    bg.classList.add("aberto");
+
+    const inp = $("#modal-input");
+    if(inp){
+      inp.focus();
+      inp.addEventListener("input", () => {
+        $("#modal-sim").disabled = inp.value.trim().toUpperCase() !== String(opts.exigirTexto).toUpperCase();
+      });
+    } else {
+      $("#modal-sim").focus();
+    }
+
+    const fim = (v) => {
+      bg.classList.remove("aberto");
+      document.removeEventListener("keydown", tecla);
+      resolve(v);
+    };
+    const tecla = (e) => { if(e.key === "Escape") fim(false); };
+    document.addEventListener("keydown", tecla);
+    $("#modal-sim").onclick = () => fim(true);
+    $("#modal-nao").onclick = () => fim(false);
+    bg.onclick = (e) => { if(e.target === bg) fim(false); };
+  });
+}
+
+/* ---------------------------------------------------------------------------
+   2. PERSISTÊNCIA
+   ------------------------------------------------------------------------ */
+
+function salvar(){
+  try{
+    localStorage.setItem(CHAVE_LS, JSON.stringify(estado));
+  }catch(e){
+    toast("Não consegui salvar no navegador. Exporte um JSON agora.", true);
+    console.error(e);
+  }
+}
+
+function carregar(){
+  try{
+    const bruto = localStorage.getItem(CHAVE_LS);
+    if(!bruto) return false;
+    const dados = JSON.parse(bruto);
+    if(!dados || !Array.isArray(dados.leads) || !dados.leads.length) return false;
+    estado.leads       = dados.leads;
+    estado.contratos   = Array.isArray(dados.contratos) ? dados.contratos : [];
+    estado.planos      = Array.isArray(dados.planos)    ? dados.planos    : [];
+    estado.config      = Object.assign(
+      { prazo2:2, prazo3:5, prazo4:10, mesesGerar:12, msgCobranca:MSG_COBRANCA_PADRAO },
+      dados.config || {});
+    estado.importadoEm = dados.importadoEm || null;
+    sincronizarMensalidades();   // cria os meses novos que venceram desde a última abertura
+    return true;
+  }catch(e){
+    console.error("localStorage corrompido", e);
+    return false;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. LEITURA DO .XLSX
+   Estratégia: leitor nativo próprio (ZIP + XML via DecompressionStream) para
+   funcionar 100% offline. Se o navegador não suportar, cai para o SheetJS
+   do CDN — aí sim precisa de internet, só nesse momento.
+   ------------------------------------------------------------------------ */
+
+/** Descompacta um bloco deflate cru usando a API nativa do navegador. */
+async function inflarCru(bytes){
+  const ds = new DecompressionStream("deflate-raw");
+  const stream = new Blob([bytes]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+/** Lê o diretório central de um ZIP e devolve {nome: Uint8Array} das entradas pedidas. */
+async function lerZip(buffer, querNome){
+  const dv = new DataView(buffer);
+  const u8 = new Uint8Array(buffer);
+
+  // localizar o End Of Central Directory varrendo de trás pra frente
+  let eocd = -1;
+  for(let i = u8.length - 22; i >= 0 && i > u8.length - 66000; i--){
+    if(dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; }
+  }
+  if(eocd < 0) throw new Error("ZIP inválido (EOCD não encontrado)");
+
+  const totalEntradas = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);   // início do diretório central
+  const saida = {};
+  const dec = new TextDecoder("utf-8");
+
+  for(let i = 0; i < totalEntradas; i++){
+    if(dv.getUint32(p, true) !== 0x02014b50) break;
+    const metodo    = dv.getUint16(p + 10, true);
+    const compTam   = dv.getUint32(p + 20, true);
+    const nomeTam   = dv.getUint16(p + 28, true);
+    const extraTam  = dv.getUint16(p + 30, true);
+    const comentTam = dv.getUint16(p + 32, true);
+    const offLocal  = dv.getUint32(p + 42, true);
+    const nome      = dec.decode(u8.subarray(p + 46, p + 46 + nomeTam));
+
+    if(querNome(nome)){
+      // o cabeçalho local tem tamanhos próprios de nome/extra; os dados vêm depois dele
+      const lnNome  = dv.getUint16(offLocal + 26, true);
+      const lnExtra = dv.getUint16(offLocal + 28, true);
+      const ini     = offLocal + 30 + lnNome + lnExtra;
+      const cru     = u8.subarray(ini, ini + compTam);
+      saida[nome]   = (metodo === 0) ? cru : await inflarCru(cru);
+    }
+    p += 46 + nomeTam + extraTam + comentTam;
+  }
+  return saida;
+}
+
+/** Converte a referência de célula ("BC12") no índice 0-based da coluna. */
+function colDaRef(ref){
+  let n = 0;
+  for(let i = 0; i < ref.length; i++){
+    const c = ref.charCodeAt(i);
+    if(c < 65 || c > 90) break;
+    n = n * 26 + (c - 64);
+  }
+  return n - 1;
+}
+
+/** Lê o .xlsx sem biblioteca externa. Devolve matriz de linhas da aba pedida. */
+async function lerXlsxNativo(buffer, nomeAba){
+  if(typeof DecompressionStream === "undefined") throw new Error("sem DecompressionStream");
+
+  const alvos = (n) => n === "xl/workbook.xml" || n === "xl/_rels/workbook.xml.rels"
+                    || n === "xl/sharedStrings.xml" || n.startsWith("xl/worksheets/");
+  const arqs = await lerZip(buffer, alvos);
+  const dec  = new TextDecoder("utf-8");
+  const dp   = new DOMParser();
+
+  if(!arqs["xl/workbook.xml"]) throw new Error("workbook.xml ausente");
+  const wb = dp.parseFromString(dec.decode(arqs["xl/workbook.xml"]), "application/xml");
+
+  // mapear r:id -> caminho da planilha
+  const rels = {};
+  if(arqs["xl/_rels/workbook.xml.rels"]){
+    const rd = dp.parseFromString(dec.decode(arqs["xl/_rels/workbook.xml.rels"]), "application/xml");
+    Array.from(rd.getElementsByTagName("Relationship")).forEach(r => {
+      let alvo = r.getAttribute("Target") || "";
+      alvo = alvo.replace(/^\/?xl\//,"").replace(/^\.\//,"");
+      rels[r.getAttribute("Id")] = "xl/" + alvo;
+    });
+  }
+
+  // achar a aba pelo nome (com tolerância a acento/caixa); senão, a primeira
+  const abas = Array.from(wb.getElementsByTagName("sheet"));
+  let escolhida = abas.find(s => norm(s.getAttribute("name")) === norm(nomeAba)) || abas[0];
+  if(!escolhida) throw new Error("nenhuma aba encontrada");
+  const rid = escolhida.getAttribute("r:id") || escolhida.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id");
+  let caminho = rels[rid];
+  if(!caminho || !arqs[caminho]){
+    caminho = Object.keys(arqs).filter(n => /^xl\/worksheets\/.+\.xml$/.test(n)).sort()[0];
+  }
+  if(!caminho) throw new Error("planilha não localizada no pacote");
+
+  // strings compartilhadas
+  let compartilhadas = [];
+  if(arqs["xl/sharedStrings.xml"]){
+    const sd = dp.parseFromString(dec.decode(arqs["xl/sharedStrings.xml"]), "application/xml");
+    compartilhadas = Array.from(sd.getElementsByTagName("si")).map(si => {
+      // pega todos os <t>, exceto os de anotação fonética (<rPh>)
+      let txt = "";
+      Array.from(si.getElementsByTagName("t")).forEach(t => {
+        if(t.parentNode && t.parentNode.nodeName === "rPh") return;
+        txt += t.textContent;
+      });
+      return txt;
+    });
+  }
+
+  // células
+  const sd = dp.parseFromString(dec.decode(arqs[caminho]), "application/xml");
+  const linhas = [];
+  Array.from(sd.getElementsByTagName("row")).forEach(row => {
+    const idx = parseInt(row.getAttribute("r") || "0", 10) - 1;
+    const arr = [];
+    Array.from(row.getElementsByTagName("c")).forEach(c => {
+      const ci = colDaRef(c.getAttribute("r") || "A1");
+      const t  = c.getAttribute("t");
+      let v = null;
+      if(t === "inlineStr"){
+        const is = c.getElementsByTagName("is")[0];
+        v = is ? Array.from(is.getElementsByTagName("t")).map(x => x.textContent).join("") : "";
+      } else {
+        const vn = c.getElementsByTagName("v")[0];
+        if(vn){
+          if(t === "s")      v = compartilhadas[parseInt(vn.textContent,10)] ?? "";
+          else if(t === "b") v = vn.textContent === "1";
+          else if(t === "e") v = null;
+          else {
+            const num = parseFloat(vn.textContent);
+            v = isNaN(num) ? vn.textContent : num;
+          }
+        }
+      }
+      arr[ci] = v;
+    });
+    linhas[idx >= 0 ? idx : linhas.length] = arr;
+  });
+
+  return linhas;
+}
+
+/** Plano B: SheetJS do CDN (exige internet nesse instante). */
+function carregarSheetJS(){
+  return new Promise((ok, falha) => {
+    if(window.XLSX) return ok(window.XLSX);
+    const s = document.createElement("script");
+    s.src = CDN_SHEETJS;
+    s.onload  = () => window.XLSX ? ok(window.XLSX) : falha(new Error("SheetJS não inicializou"));
+    s.onerror = () => falha(new Error("sem internet para baixar o SheetJS"));
+    document.head.appendChild(s);
+  });
+}
+
+async function lerXlsx(arquivo){
+  const buffer = await arquivo.arrayBuffer();
+  try{
+    return await lerXlsxNativo(buffer, "Leads");
+  }catch(e){
+    console.warn("Leitor nativo falhou, tentando SheetJS:", e);
+    const XLSX = await carregarSheetJS();
+    const wb = XLSX.read(buffer, { type:"array" });
+    const nome = wb.SheetNames.find(n => norm(n) === "leads") || wb.SheetNames[0];
+    return XLSX.utils.sheet_to_json(wb.Sheets[nome], { header:1, raw:true, defval:null });
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   4. IMPORTAÇÃO E MERGE
+   ------------------------------------------------------------------------ */
+
+/* Ordem fixa das colunas A..V, conforme a planilha. */
+const COLUNAS = ["nome","nicho","cidade","bairro","endereco","telefone","nota","avaliacoes",
+                 "temSite","siteAponta","porte","chance","oportunidade","prioridade",
+                 "msg1","msg2","msg3","msg4","diagnostico","statusPlanilha","dataPlanilha","obsPlanilha"];
+
+/** Chave única do lead: telefone + nome (decisão do Guilherme — 2 pares dividem o mesmo número). */
+function chaveLead(telDigitos, nome){
+  return telDigitos + "|" + slug(nome);
+}
+
+function txt(v){ return v == null ? "" : String(v).trim(); }
+function num(v){
+  if(v == null || v === "") return null;
+  const n = parseFloat(String(v).replace(",","."));
+  return isNaN(n) ? null : n;
+}
+
+/** Converte uma linha da planilha em objeto de lead. */
+function linhaParaLead(linha){
+  const o = {};
+  COLUNAS.forEach((k,i) => { o[k] = linha[i] ?? null; });
+
+  const tel = classificaTelefone(o.telefone);
+  if(!txt(o.nome)) return null;
+
+  return {
+    id:          chaveLead(tel.digitos, o.nome),
+    nome:        txt(o.nome),
+    nicho:       txt(o.nicho),
+    cidade:      txt(o.cidade),
+    bairro:      txt(o.bairro),
+    endereco:    txt(o.endereco),
+    telefone:    txt(o.telefone),
+    telDigitos:  tel.digitos,
+    telTipo:     tel.tipo,
+    telRotulo:   tel.rotulo,
+    wa:          tel.wa,
+    nota:        num(o.nota),
+    avaliacoes:  num(o.avaliacoes),
+    temSite:     txt(o.temSite),
+    siteAponta:  txt(o.siteAponta),
+    porte:       txt(o.porte),
+    chance:      txt(o.chance),
+    oportunidade:num(o.oportunidade) || 0,
+    prioridade:  (txt(o.prioridade).toUpperCase() || "D").slice(0,1),
+    msgs:        [txt(o.msg1), txt(o.msg2), txt(o.msg3), txt(o.msg4)],
+    diagnostico: txt(o.diagnostico),
+    // campos que o app passa a controlar
+    statusManual:"",
+    obs:         txt(o.obsPlanilha),
+    historico:   []      // [{etapa:1..4, data:"AAAA-MM-DD"}]
+  };
+}
+
+/** Importa a planilha, preservando o histórico dos leads já existentes. */
+async function importarPlanilha(arquivo){
+  toast("Lendo a planilha…");
+  let linhas;
+  try{
+    linhas = await lerXlsx(arquivo);
+  }catch(e){
+    console.error(e);
+    return toast("Não consegui ler o arquivo: " + e.message, true);
+  }
+  if(!linhas || linhas.length < 2) return toast("A aba Leads parece vazia.", true);
+
+  // conferência leve do cabeçalho — se não bater, avisa mas segue por posição
+  const cab = (linhas[0] || []).map(norm);
+  if(!cab.some(c => c.includes("nome do negocio"))){
+    toast("Cabeçalho diferente do esperado — li pela posição das colunas (A..V).");
+  }
+
+  const antigos = new Map(estado.leads.map(l => [l.id, l]));
+  const novos = [];
+  const vistos = new Set();
+  let atualizados = 0, inseridos = 0;
+
+  for(let i = 1; i < linhas.length; i++){
+    const l = linhaParaLead(linhas[i] || []);
+    if(!l) continue;
+
+    // se a mesma chave aparecer duas vezes na planilha, desempata com sufixo
+    let id = l.id, n = 2;
+    while(vistos.has(id)){ id = l.id + "#" + (n++); }
+    l.id = id;
+    vistos.add(id);
+
+    const velho = antigos.get(id);
+    if(velho){
+      // preserva TODO o histórico de contato; atualiza só os dados do lead
+      l.historico    = Array.isArray(velho.historico) ? velho.historico : [];
+      l.statusManual = velho.statusManual || "";
+      l.obs          = velho.obs || l.obs;
+      atualizados++;
+    } else {
+      inseridos++;
+    }
+    novos.push(l);
+  }
+
+  if(!novos.length) return toast("Nenhuma linha válida encontrada.", true);
+
+  // leads que existiam antes e não vieram na planilha nova continuam salvos
+  const idsNovos = new Set(novos.map(l => l.id));
+  const remanescentes = estado.leads.filter(l => !idsNovos.has(l.id));
+
+  estado.leads = novos.concat(remanescentes);
+  estado.importadoEm = new Date().toISOString();
+  salvar();
+
+  const extra = remanescentes.length ? ` · ${remanescentes.length} mantidos fora da planilha` : "";
+  toast(`${inseridos} novos, ${atualizados} atualizados${extra}.`);
+  iniciarApp();
+}
+
+/* ---------------------------------------------------------------------------
+   5. REGRA DO FUNIL
+   ------------------------------------------------------------------------ */
+
+const STATUS_MANUAIS   = ["Respondeu","Em negociação","Proposta enviada","Fechado","Descartado"];
+const STATUS_FINALIZAM = ["Respondeu","Fechado","Descartado"];  // encerram a régua
+const STATUS_CONGELAM  = ["Em negociação","Proposta enviada"];  // pausam a régua
+
+const ESTAGIOS = {
+  nao_contatado: { rotulo:"Não contatado",       cor:"var(--cinza-cl)" },
+  aguardando:    { rotulo:"Aguardando resposta", cor:"var(--orange)"   },
+  venc2:         { rotulo:"Follow-up 2 vencido", cor:"var(--red)"      },
+  venc3:         { rotulo:"Follow-up 3 vencido", cor:"var(--red)"      },
+  venc4:         { rotulo:"Encerramento vencido",cor:"var(--sangria)"  },
+  congelado:     { rotulo:"Em negociação",       cor:"var(--tangelo)"  },
+  finalizado:    { rotulo:"Finalizado",          cor:"var(--verde)"    }
+};
+
+/** Maior etapa já registrada e a data dela. */
+function ultimoEnvio(lead){
+  const h = lead.historico || [];
+  if(!h.length) return null;
+  return h.reduce((a,b) => (b.etapa > a.etapa ? b : a), h[0]);
+}
+
+/**
+ * Calcula o estágio do lead.
+ * Devolve {chave, rotulo, cor, proximaEtapa, atraso, diasDesde, prazo}.
+ */
+function calcFunil(lead){
+  const cfg = estado.config;
+  const st  = lead.statusManual || "";
+  const ult = ultimoEnvio(lead);
+  const enviadas = (lead.historico || []).length;
+
+  const base = (chave, extra) => Object.assign({
+    chave, rotulo: ESTAGIOS[chave].rotulo, cor: ESTAGIOS[chave].cor,
+    proximaEtapa: null, atraso: 0, diasDesde: ult ? diasEntre(ult.data, hojeISO()) : null, prazo: null
+  }, extra || {});
+
+  // status manual congela a régua automática
+  if(STATUS_FINALIZAM.includes(st)) return base("finalizado", { rotulo: st });
+  if(STATUS_CONGELAM.includes(st))  return base("congelado",  { rotulo: st });
+
+  if(!ult)                return base("nao_contatado", { proximaEtapa: 1 });
+  if(ult.etapa >= 4)      return base("finalizado", { rotulo:"Ciclo concluído" });
+
+  const prazo = ult.etapa === 1 ? cfg.prazo2 : ult.etapa === 2 ? cfg.prazo3 : cfg.prazo4;
+  const dias  = diasEntre(ult.data, hojeISO());
+  const prox  = ult.etapa + 1;
+
+  if(dias >= prazo){
+    const chave = ult.etapa === 1 ? "venc2" : ult.etapa === 2 ? "venc3" : "venc4";
+    return base(chave, { proximaEtapa: prox, atraso: dias - prazo, prazo });
+  }
+  return base("aguardando", { proximaEtapa: prox, prazo });
+}
+
+const VENCIDOS = ["venc2","venc3","venc4"];
+function estaVencido(lead){ return VENCIDOS.includes(calcFunil(lead).chave); }
+
+/** Registra o envio de uma etapa e avança o funil. Só é chamado após confirmação. */
+function registrarEnvio(lead, etapa){
+  lead.historico = lead.historico || [];
+  lead.historico = lead.historico.filter(h => h.etapa !== etapa);   // regravar substitui
+  lead.historico.push({ etapa, data: hojeISO() });
+  lead.historico.sort((a,b) => a.etapa - b.etapa);
+  salvar();
+}
+
+/** Desfaz o último registro (para quando eu marco por engano). */
+function desfazerUltimo(lead){
+  const ult = ultimoEnvio(lead);
+  if(!ult) return false;
+  lead.historico = lead.historico.filter(h => h.etapa !== ult.etapa);
+  salvar();
+  return true;
+}
+
+/* ---------------------------------------------------------------------------
+   6. WHATSAPP — nunca envia sozinho, só abre a janela com o texto pronto
+   ------------------------------------------------------------------------ */
+
+function linkWhatsApp(lead, texto){
+  if(!lead.wa) return null;
+  return `https://wa.me/${lead.wa}?text=${encodeURIComponent(texto || "")}`;
+}
+
+function linkMaps(lead){
+  return "https://www.google.com/maps/search/?api=1&query=" +
+         encodeURIComponent([lead.nome, lead.endereco, lead.cidade].filter(Boolean).join(" "));
+}
+
+/**
+ * Abre o WhatsApp numa aba nova e, só depois, pergunta se marca como enviada.
+ * A janela abre dentro do clique para não ser bloqueada; a confirmação vem depois.
+ */
+async function abrirWhatsApp(lead, etapa){
+  const texto = (lead.msgs && lead.msgs[etapa-1]) || "";
+  if(!texto) return toast(`Este lead não tem a mensagem ${etapa} preenchida.`, true);
+
+  const url = linkWhatsApp(lead, texto);
+  if(!url){
+    return toast("Esse número não aceita WhatsApp (0800). Use o botão Ligar.", true);
+  }
+  window.open(url, "_blank", "noopener");
+
+  const jaTem = (lead.historico||[]).some(h => h.etapa === etapa);
+  const ok = await confirmar({
+    titulo: `Marcar mensagem ${etapa} como enviada?`,
+    texto: `<b>${esc(lead.nome)}</b><br>` +
+           (jaTem ? `Esta etapa já está registrada. Confirmar regrava a data para <b>hoje</b>.`
+                  : `Só confirme se você realmente apertou enviar no WhatsApp. Isso registra a data de hoje e avança o funil.`),
+    ok: "Sim, marquei como enviada",
+    cancelar: "Ainda não enviei"
+  });
+
+  if(ok){
+    registrarEnvio(lead, etapa);
+    toast(`Mensagem ${etapa} registrada para ${lead.nome}.`);
+    renderTudo();
+    if(ui.leadAberto === lead.id) abrirPainel(lead.id);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   6b. FINANCEIRO — contratos e cobranças
+
+   Um contrato nasce de um lead fechado. Ele pode ter valor de setup
+   (à vista ou parcelado), mensalidade, ou os dois — cada cliente é montado
+   do zero. Cada parcela vira uma cobrança com vencimento próprio.
+   O status "atrasada" é calculado na hora, igual à régua do funil:
+   nada fica congelado no arquivo esperando alguém recalcular.
+   ------------------------------------------------------------------------ */
+
+/** Situação real da cobrança, calculada a partir da data. */
+function statusCobranca(c){
+  if(c.status === "paga")      return "paga";
+  if(c.status === "cancelada") return "cancelada";
+  return c.vencimento < hojeISO() ? "atrasada" : "aberta";
+}
+
+const ROTULO_COB = { paga:"Paga", aberta:"Em aberto", atrasada:"Atrasada", cancelada:"Cancelada" };
+const CLASSE_COB = { paga:"sf-paga", aberta:"sf-aberta", atrasada:"sf-atrasada", cancelada:"sf-enviada" };
+
+/** Todas as cobranças de todos os contratos, já com o contrato junto. */
+function todasCobrancas(){
+  const out = [];
+  estado.contratos.forEach(ct => (ct.cobrancas || []).forEach(c => {
+    out.push({ cob:c, contrato:ct, situacao: statusCobranca(c) });
+  }));
+  return out;
+}
+
+/** Gera as parcelas do setup no momento em que o contrato é criado. */
+function gerarCobrancasSetup(contrato){
+  const s = contrato.setup;
+  if(!s || !s.valor || s.valor <= 0) return [];
+  const parcelas = Math.max(1, parseInt(s.parcelas, 10) || 1);
+  const valorParcela = Math.round((s.valor / parcelas) * 100) / 100;
+  const out = [];
+  for(let i = 0; i < parcelas; i++){
+    // a última parcela absorve a sobra dos centavos do arredondamento
+    const valor = (i === parcelas - 1)
+      ? Math.round((s.valor - valorParcela * (parcelas - 1)) * 100) / 100
+      : valorParcela;
+    out.push({
+      id: idNovo("cob"),
+      tipo: "setup",
+      descricao: parcelas > 1 ? `Criação do site ${i+1}/${parcelas}` : "Criação do site",
+      valor,
+      vencimento: addMeses(s.primeiroVenc, i),
+      status: "aberta",
+      pagoEm: null,
+      enviadaEm: null
+    });
+  }
+  return out;
+}
+
+/**
+ * Mantém as mensalidades projetadas alguns meses à frente.
+ * Roda ao abrir o app: o mês novo aparece sozinho, sem você fazer nada.
+ * Só cria o que falta — nunca duplica nem mexe em cobrança já paga.
+ */
+function sincronizarMensalidades(){
+  let criou = 0;
+  const limite = addMeses(hojeISO(), estado.config.mesesGerar || 12);
+
+  estado.contratos.forEach(ct => {
+    ct.cobrancas = ct.cobrancas || [];
+    const m = ct.mensalidade;
+    if(ct.status !== "ativo" || !m || !m.valor || m.valor <= 0) return;
+
+    const jaTem = new Set(ct.cobrancas.filter(c => c.tipo === "mensalidade").map(c => mesDe(c.vencimento)));
+    const dia = parseInt(m.diaVencimento, 10) || paraData(m.inicio).getDate();
+
+    for(let i = 0; i < 240; i++){                       // teto de segurança: 20 anos
+      const venc = addMeses(m.inicio, i, dia);
+      if(venc > limite) break;
+      if(m.ate && venc > m.ate) break;                  // contrato com prazo definido
+      if(jaTem.has(mesDe(venc))) continue;
+      ct.cobrancas.push({
+        id: idNovo("cob"),
+        tipo: "mensalidade",
+        descricao: `Mensalidade ${fmtMes(mesDe(venc))}`,
+        valor: m.valor,
+        vencimento: venc,
+        status: "aberta",
+        pagoEm: null,
+        enviadaEm: null
+      });
+      criou++;
+    }
+    ct.cobrancas.sort((a,b) => a.vencimento.localeCompare(b.vencimento));
+  });
+
+  if(criou) salvar();
+  return criou;
+}
+
+/** Cria ou atualiza um contrato a partir dos dados do formulário. */
+function salvarContrato(dados, contratoExistente){
+  if(contratoExistente){
+    // edição: preserva as cobranças que já existem e o que já foi pago
+    Object.assign(contratoExistente, {
+      cliente: dados.cliente, telefone: dados.telefone, wa: dados.wa,
+      cidade: dados.cidade, planoId: dados.planoId, obs: dados.obs,
+      mensalidade: dados.mensalidade, status: dados.status
+    });
+    sincronizarMensalidades();
+    salvar();
+    return contratoExistente;
+  }
+
+  const ct = {
+    id: idNovo("ctr"),
+    leadId: dados.leadId || null,
+    cliente: dados.cliente,
+    cidade: dados.cidade || "",
+    telefone: dados.telefone || "",
+    wa: dados.wa || null,
+    criadoEm: hojeISO(),
+    status: "ativo",
+    setup: dados.setup,
+    mensalidade: dados.mensalidade,
+    planoId: dados.planoId || null,
+    obs: dados.obs || "",
+    cobrancas: []
+  };
+  ct.cobrancas = gerarCobrancasSetup(ct);
+  estado.contratos.push(ct);
+
+  // o lead que virou contrato é um cliente: sai da régua de prospecção
+  if(ct.leadId){
+    const l = estado.leads.find(x => x.id === ct.leadId);
+    if(l && l.statusManual !== "Fechado") l.statusManual = "Fechado";
+  }
+
+  sincronizarMensalidades();
+  salvar();
+  return ct;
+}
+
+/** Soma dos valores de um contrato já recebidos e ainda em aberto. */
+function resumoContrato(ct){
+  let pago = 0, aberto = 0, atrasado = 0;
+  (ct.cobrancas || []).forEach(c => {
+    const s = statusCobranca(c);
+    if(s === "paga") pago += c.valor;
+    else if(s === "atrasada"){ atrasado += c.valor; aberto += c.valor; }
+    else if(s === "aberta") aberto += c.valor;
+  });
+  return { pago, aberto, atrasado, total: pago + aberto };
+}
+
+/** Indicadores do topo da tela Financeiro. */
+function kpisFinanceiros(){
+  const mes = mesDe(hojeISO());
+  let recebidoMes = 0, aReceberMes = 0, atrasado = 0, recebidoTotal = 0, qtdAtrasadas = 0;
+
+  todasCobrancas().forEach(({cob, situacao}) => {
+    if(situacao === "paga"){
+      recebidoTotal += cob.valor;
+      if(mesDe(cob.pagoEm) === mes) recebidoMes += cob.valor;
+    } else if(situacao === "atrasada"){
+      atrasado += cob.valor; qtdAtrasadas++;
+      if(mesDe(cob.vencimento) === mes) aReceberMes += cob.valor;
+    } else if(situacao === "aberta" && mesDe(cob.vencimento) === mes){
+      aReceberMes += cob.valor;
+    }
+  });
+
+  // receita recorrente: só contratos ativos com mensalidade viva
+  const mrr = estado.contratos
+    .filter(ct => ct.status === "ativo" && ct.mensalidade && ct.mensalidade.valor > 0)
+    .filter(ct => !ct.mensalidade.ate || ct.mensalidade.ate >= hojeISO())
+    .reduce((s,ct) => s + ct.mensalidade.valor, 0);
+
+  return {
+    recebidoMes, aReceberMes, atrasado, recebidoTotal, mrr, qtdAtrasadas,
+    ativos: estado.contratos.filter(ct => ct.status === "ativo").length,
+    total: estado.contratos.length
+  };
+}
+
+/** Faturamento mês a mês: o que entrou e o que ainda está previsto. */
+function serieFaturamento(qtdMeses){
+  const meses = [];
+  for(let i = qtdMeses - 1; i >= 0; i--) meses.push(mesDe(addMeses(hojeISO(), -i, 1)));
+
+  const mapa = {};
+  meses.forEach(m => mapa[m] = { mes:m, recebido:0, previsto:0 });
+
+  todasCobrancas().forEach(({cob, situacao}) => {
+    if(situacao === "cancelada") return;
+    if(situacao === "paga"){
+      const m = mesDe(cob.pagoEm);
+      if(mapa[m]) mapa[m].recebido += cob.valor;
+    } else {
+      const m = mesDe(cob.vencimento);
+      if(mapa[m]) mapa[m].previsto += cob.valor;
+    }
+  });
+  return meses.map(m => mapa[m]);
+}
+
+/** Cobranças que pedem ação: atrasadas primeiro, depois as que vencem em breve. */
+function cobrancasPendentes(limite){
+  const hoje = hojeISO();
+  const limiteVenc = addMeses(hoje, 1);
+  return todasCobrancas()
+    .filter(x => x.situacao === "atrasada" || (x.situacao === "aberta" && x.cob.vencimento <= limiteVenc))
+    .sort((a,b) => a.cob.vencimento.localeCompare(b.cob.vencimento))
+    .slice(0, limite || 999);
+}
+
+/** Marca uma cobrança como paga (ou desfaz). Sempre por ação sua. */
+function marcarPaga(cobId, pago){
+  estado.contratos.forEach(ct => (ct.cobrancas||[]).forEach(c => {
+    if(c.id !== cobId) return;
+    c.status = pago ? "paga" : "aberta";
+    c.pagoEm = pago ? hojeISO() : null;
+  }));
+  salvar();
+}
+
+/** Localiza a cobrança e o contrato dela pelo id. */
+function acharCobranca(cobId){
+  for(const ct of estado.contratos){
+    const c = (ct.cobrancas||[]).find(x => x.id === cobId);
+    if(c) return { cob:c, contrato:ct };
+  }
+  return null;
+}
+
+/** Monta o texto da cobrança trocando os {campos} pelo valor real. */
+function textoCobranca(cob, contrato){
+  const plano = estado.planos.find(p => p.id === contrato.planoId);
+  return (estado.config.msgCobranca || MSG_COBRANCA_PADRAO)
+    .replace(/{cliente}/g,    contrato.cliente)
+    .replace(/{descricao}/g,  cob.descricao)
+    .replace(/{valor}/g,      fmtMoeda(cob.valor))
+    .replace(/{vencimento}/g, fmtData(cob.vencimento))
+    .replace(/{link}/g,       plano ? plano.url : "");
+}
+
+/**
+ * Abre o WhatsApp com a cobrança montada e só depois pergunta se registra.
+ * Mesma regra do resto do app: nunca marca nada sozinho.
+ */
+async function abrirCobrancaWhatsApp(cobId){
+  const achado = acharCobranca(cobId);
+  if(!achado) return;
+  const { cob, contrato } = achado;
+
+  if(!contrato.wa) return toast("Esse contrato não tem número de WhatsApp.", true);
+  const plano = estado.planos.find(p => p.id === contrato.planoId);
+  if(!plano){
+    return toast("Vincule um link de pagamento ao contrato primeiro (em Ajustes).", true);
+  }
+
+  window.open(`https://wa.me/${contrato.wa}?text=${encodeURIComponent(textoCobranca(cob, contrato))}`, "_blank", "noopener");
+
+  const ok = await confirmar({
+    titulo: "Registrar cobrança como enviada?",
+    texto: `<b>${esc(contrato.cliente)}</b><br>${esc(cob.descricao)} — ${fmtMoeda(cob.valor)}<br><br>` +
+           `Isso só anota que você mandou o link. O pagamento você marca separado, quando o dinheiro cair.`,
+    ok: "Sim, enviei a cobrança",
+    cancelar: "Ainda não enviei"
+  });
+  if(ok){
+    cob.enviadaEm = hojeISO();
+    salvar(); renderTudo();
+    toast("Cobrança registrada como enviada.");
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   7. AGREGAÇÕES PARA A HOME
+   ------------------------------------------------------------------------ */
+
+function calcularKPIs(){
+  let naoContatado = 0, aguardando = 0, vencidos = 0, fechados = 0;
+  estado.leads.forEach(l => {
+    const f = calcFunil(l);
+    if(f.chave === "nao_contatado") naoContatado++;
+    else if(f.chave === "aguardando") aguardando++;
+    else if(VENCIDOS.includes(f.chave)) vencidos++;
+    if(l.statusManual === "Fechado") fechados++;
+  });
+  return { total: estado.leads.length, naoContatado, aguardando, vencidos, fechados };
+}
+
+function contagemPorEstagio(){
+  const c = {};
+  Object.keys(ESTAGIOS).forEach(k => c[k] = 0);
+  estado.leads.forEach(l => { c[calcFunil(l).chave]++; });
+  return c;
+}
+
+/** Fila do dia: vencidos primeiro (mais atrasado no topo), completada com nunca contatados. */
+function filaDeHoje(limite){
+  const vencidos = estado.leads
+    .map(l => ({ lead:l, f:calcFunil(l) }))
+    .filter(x => VENCIDOS.includes(x.f.chave))
+    .sort((a,b) => b.f.atraso - a.f.atraso || b.lead.oportunidade - a.lead.oportunidade);
+
+  const fila = vencidos.slice();
+  if(fila.length < limite){
+    const ordemPrio = { A:0, B:1, C:2, D:3 };
+    const novos = estado.leads
+      .map(l => ({ lead:l, f:calcFunil(l) }))
+      .filter(x => x.f.chave === "nao_contatado")
+      .sort((a,b) =>
+        (ordemPrio[a.lead.prioridade] ?? 9) - (ordemPrio[b.lead.prioridade] ?? 9) ||
+        b.lead.oportunidade - a.lead.oportunidade ||
+        (b.lead.avaliacoes||0) - (a.lead.avaliacoes||0)
+      )
+      .slice(0, limite - fila.length);
+    fila.push(...novos);
+  }
+  return { itens: fila.slice(0, limite), totalVencidos: vencidos.length };
+}
+
+/** Série de contatos por dia dentro do período (dias). periodo 0 = tudo. */
+function serieContatos(periodo){
+  const todos = [];
+  estado.leads.forEach(l => (l.historico||[]).forEach(h => todos.push(h.data)));
+
+  const hoje = hojeISO();
+  let ini;
+  if(periodo > 0){
+    const d = paraData(hoje); d.setDate(d.getDate() - (periodo - 1));
+    ini = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  } else {
+    ini = todos.length ? todos.slice().sort()[0] : hoje;
+    if(diasEntre(ini, hoje) > 365){ const d = paraData(hoje); d.setDate(d.getDate()-364);
+      ini = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+  }
+
+  const mapa = {};
+  todos.forEach(d => { if(d >= ini && d <= hoje) mapa[d] = (mapa[d]||0) + 1; });
+
+  const pontos = [];
+  const cursor = paraData(ini);
+  const fim = paraData(hoje);
+  while(cursor <= fim){
+    const iso = `${cursor.getFullYear()}-${String(cursor.getMonth()+1).padStart(2,"0")}-${String(cursor.getDate()).padStart(2,"0")}`;
+    pontos.push({ data: iso, v: mapa[iso] || 0 });
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return pontos;
+}
+
+/** Últimos N envios registrados. */
+function ultimasAtividades(n){
+  const itens = [];
+  estado.leads.forEach(l => (l.historico||[]).forEach(h => itens.push({ lead:l, etapa:h.etapa, data:h.data })));
+  itens.sort((a,b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : b.etapa - a.etapa));
+  return itens.slice(0, n);
+}
+
+function distribuicao(campo){
+  const c = {};
+  estado.leads.forEach(l => { const k = l[campo] || "—"; c[k] = (c[k]||0) + 1; });
+  return Object.entries(c).sort((a,b) => b[1] - a[1]);
+}
+
+/* ---------------------------------------------------------------------------
+   8. GRÁFICO DE ÁREA (SVG próprio — sem CDN, funciona offline)
+   ------------------------------------------------------------------------ */
+
+function svgArea(pontos){
+  const L = 1000, A = 230, padE = 44, padD = 12, padT = 16, padB = 26;
+  const larg = L - padE - padD, alt = A - padT - padB;
+  const maxV = Math.max(1, ...pontos.map(p => p.v));
+  const topo = Math.max(1, Math.ceil(maxV * 1.25));
+  const n = pontos.length;
+
+  const x = i => padE + (n <= 1 ? larg/2 : (i/(n-1)) * larg);
+  const y = v => padT + alt - (v/topo) * alt;
+
+  // grade e rótulos do eixo Y
+  let grade = "", eixoY = "";
+  const linhas = 4;
+  for(let i = 0; i <= linhas; i++){
+    const val = Math.round(topo * (1 - i/linhas));
+    const py = padT + (alt * i / linhas);
+    grade  += `<line x1="${padE}" y1="${py.toFixed(1)}" x2="${L-padD}" y2="${py.toFixed(1)}" stroke="#3A2E27" stroke-width="1" stroke-dasharray="3 6" opacity=".55"/>`;
+    eixoY  += `<text x="${padE-10}" y="${(py+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#A99B91">${val}</text>`;
+  }
+
+  // caminhos
+  const pts = pontos.map((p,i) => [x(i), y(p.v)]);
+  const linha = pts.map((p,i) => `${i?"L":"M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
+  const area  = `${linha} L${x(n-1).toFixed(1)},${padT+alt} L${x(0).toFixed(1)},${padT+alt} Z`;
+
+  // rótulos do eixo X (no máximo 6)
+  let eixoX = "";
+  const passo = Math.max(1, Math.ceil(n / 6));
+  pontos.forEach((p,i) => {
+    if(i % passo === 0 || i === n-1){
+      const d = paraData(p.data);
+      eixoX += `<text x="${x(i).toFixed(1)}" y="${A-6}" text-anchor="middle" font-size="11" fill="#A99B91">${String(d.getDate()).padStart(2,"0")}/${MESES[d.getMonth()]}</text>`;
+    }
+  });
+
+  // marcadores só nos dias com atividade
+  let bolas = "";
+  pontos.forEach((p,i) => {
+    if(p.v > 0) bolas += `<circle cx="${x(i).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="3.5" fill="#F37100" stroke="#1E1815" stroke-width="2"/>`;
+  });
+
+  return `
+  <svg viewBox="0 0 ${L} ${A}" preserveAspectRatio="none" id="svg-funil" data-n="${n}" data-pade="${padE}" data-larg="${larg}">
+    <defs>
+      <linearGradient id="gradArea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#F37100" stop-opacity=".55"/>
+        <stop offset="55%"  stop-color="#F3500A" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#F3500A" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="gradLinha" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#F3500A"/><stop offset="100%" stop-color="#F37100"/>
+      </linearGradient>
+    </defs>
+    ${grade}${eixoY}${eixoX}
+    <path d="${area}" fill="url(#gradArea)"/>
+    <path d="${linha}" fill="none" stroke="url(#gradLinha)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${bolas}
+    <line id="guia-funil" x1="0" y1="${padT}" x2="0" y2="${padT+alt}" stroke="#F5EFEA" stroke-width="1" opacity="0" stroke-dasharray="3 4"/>
+    <circle id="foco-funil" r="5.5" fill="#fff" stroke="#F3500A" stroke-width="2.5" opacity="0"/>
+    <rect id="captura-funil" x="${padE}" y="${padT}" width="${larg}" height="${alt}" fill="transparent"/>
+  </svg>`;
+}
+
+/** Liga o tooltip do gráfico (segue o mouse, como na referência). */
+function ligarTooltipGrafico(pontos){
+  const svg = $("#svg-funil"); if(!svg) return;
+  const cap = $("#captura-funil"), guia = $("#guia-funil"), foco = $("#foco-funil"), tip = $("#tip-funil");
+  const n = pontos.length, padE = +svg.dataset.pade, larg = +svg.dataset.larg;
+  if(!cap || !n) return;
+
+  function mover(ev){
+    const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+    const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+    const r  = svg.getBoundingClientRect();
+    const vx = ((cx - r.left) / r.width) * 1000;
+    let i = n <= 1 ? 0 : Math.round(((vx - padE) / larg) * (n - 1));
+    i = Math.max(0, Math.min(n - 1, i));
+    const p = pontos[i];
+
+    const px = padE + (n <= 1 ? larg/2 : (i/(n-1)) * larg);
+    const maxV = Math.max(1, ...pontos.map(q => q.v));
+    const topo = Math.max(1, Math.ceil(maxV * 1.25));
+    const py = 16 + (230-16-26) - (p.v/topo) * (230-16-26);
+
+    guia.setAttribute("x1", px); guia.setAttribute("x2", px); guia.setAttribute("opacity", ".45");
+    foco.setAttribute("cx", px); foco.setAttribute("cy", py); foco.setAttribute("opacity", "1");
+
+    const wrap = svg.parentElement.getBoundingClientRect();
+    tip.style.left = (cx - wrap.left) + "px";
+    tip.style.top  = ((py/230) * r.height) + "px";
+    tip.innerHTML = `${p.v} ${p.v === 1 ? "contato" : "contatos"}<div class="d">${fmtData(p.data)}</div>`;
+    tip.style.opacity = "1";
+  }
+  function sair(){ guia.setAttribute("opacity","0"); foco.setAttribute("opacity","0"); tip.style.opacity = "0"; }
+
+  svg.addEventListener("mousemove", mover);
+  svg.addEventListener("mouseleave", sair);
+  svg.addEventListener("touchmove", mover, { passive:true });
+  svg.addEventListener("touchend", sair);
+}
+
+/* ---------------------------------------------------------------------------
+   9. RENDERIZAÇÃO — HOME
+   ------------------------------------------------------------------------ */
+
+function corPrioridade(p){
+  return p === "A" ? "var(--verde)" : p === "B" ? "var(--orange)" : p === "C" ? "var(--cinza-cl)" : "var(--cinza-es)";
+}
+function classeSite(v){
+  const n = norm(v);
+  if(n === "nao") return { cls:"t-sem", txt:"Sem site" };
+  if(n === "sim") return { cls:"t-tem", txt:"Tem site" };
+  return { cls:"t-ver", txt:"A verificar" };
+}
+
+function renderHome(){
+  const k = calcularKPIs();
+  const cont = contagemPorEstagio();
+  const pontos = serieContatos(ui.periodo);
+  const { itens: fila, totalVencidos } = filaDeHoje(12);
+  const ativ = ultimasAtividades(8);
+  const fin = kpisFinanceiros();
+  const prio = ["A","B","C","D"].map(p => [p, estado.leads.filter(l => l.prioridade === p).length]);
+  const cidades = distribuicao("cidade").slice(0, 7);
+  const maxCid = Math.max(1, ...cidades.map(c => c[1]));
+  const totalContatos = pontos.reduce((s,p) => s + p.v, 0);
+
+  const html = `
+    <h1 class="pagina">Bom trabalho, Guilherme</h1>
+
+    <!-- faixa de KPIs -->
+    <div class="kpis">
+      <button class="kpi" data-filtro-estagio=""><div class="rot"><span class="pt" style="background:var(--text-dim)"></span>Total de leads</div><div class="val">${k.total}</div></button>
+      <button class="kpi" data-filtro-estagio="nao_contatado"><div class="rot"><span class="pt" style="background:var(--cinza-cl)"></span>Não contatados</div><div class="val">${k.naoContatado}</div></button>
+      <button class="kpi" data-filtro-estagio="aguardando"><div class="rot"><span class="pt" style="background:var(--orange)"></span>Aguardando resposta</div><div class="val">${k.aguardando}</div></button>
+      <button class="kpi destaque" data-filtro-estagio="vencidos"><div class="rot"><span class="pt"></span>Follow-ups vencidos</div><div class="val">${k.vencidos}</div></button>
+      <button class="kpi" data-filtro-status="Fechado"><div class="rot"><span class="pt" style="background:var(--verde)"></span>Fechados</div><div class="val">${k.fechados}</div></button>
+    </div>
+
+    <div class="home-grid">
+      <div class="home-esq">
+
+        <!-- gráfico do funil -->
+        <section class="card">
+          <div class="card-tit">
+            <h2>Meu funil</h2>
+            <span class="sub">${totalContatos} ${totalContatos === 1 ? "contato registrado" : "contatos registrados"} no período</span>
+            <div class="periodos">
+              <button data-periodo="7"  class="${ui.periodo===7?"ativo":""}">7 dias</button>
+              <button data-periodo="30" class="${ui.periodo===30?"ativo":""}">30 dias</button>
+              <button data-periodo="90" class="${ui.periodo===90?"ativo":""}">90 dias</button>
+              <button data-periodo="0"  class="${ui.periodo===0?"ativo":""}">Tudo</button>
+            </div>
+          </div>
+          <div class="gwrap">
+            ${svgArea(pontos)}
+            <div class="tipgraf" id="tip-funil"></div>
+          </div>
+          <div class="chips-funil" style="margin-top:16px">
+            ${["nao_contatado","aguardando","venc2","venc3","venc4","congelado","finalizado"].map(ch => `
+              <button class="chip-funil" data-filtro-estagio="${ch}">
+                <i style="background:${ESTAGIOS[ch].cor}"></i>${ESTAGIOS[ch].rotulo} <b>${cont[ch]}</b>
+              </button>`).join("")}
+          </div>
+        </section>
+
+        <!-- fila do dia -->
+        <section class="card">
+          <div class="card-tit">
+            <h2>Para fazer hoje</h2>
+            <span class="sub">${totalVencidos ? `${totalVencidos} vencido${totalVencidos>1?"s":""} · mais atrasado primeiro` : "nada vencido — puxando novos leads por prioridade"}</span>
+            <button class="btn btn-sm" data-ir="leads" style="margin-left:auto">Ver todos</button>
+          </div>
+          <div class="hoje-lista">
+            ${fila.length ? fila.map(({lead,f}) => {
+              const novo = f.chave === "nao_contatado";
+              const etapa = f.proximaEtapa || 1;
+              const temMsg = !!(lead.msgs && lead.msgs[etapa-1]);
+              return `
+              <div class="hoje-item ${novo?"novo":""}" data-lead="${esc(lead.id)}">
+                <div class="atraso">
+                  ${novo ? `<div class="n">NOVO</div><div class="u">prio ${esc(lead.prioridade)}</div>`
+                         : `<div class="n">${f.atraso}</div><div class="u">${f.atraso===1?"dia":"dias"}</div>`}
+                </div>
+                <div class="info">
+                  <div class="nome">${esc(lead.nome)}</div>
+                  <div class="meta">${esc(lead.cidade)}${lead.bairro?" · "+esc(lead.bairro):""} · ${novo ? "primeiro contato" : `mensagem ${etapa} pendente`}${lead.telTipo==="fixo"?" · fixo":""}</div>
+                </div>
+                <button class="btn btn-primario btn-sm" data-wa="${esc(lead.id)}" data-etapa="${etapa}" ${(!lead.wa||!temMsg)?"disabled":""} title="${!lead.wa?"Número sem WhatsApp":"Abrir WhatsApp com a mensagem "+etapa}">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-.98.24-3.3-.69-2.79-1.1-4.56-3.96-4.7-4.14-.14-.19-1.12-1.49-1.12-2.84s.71-2.01.96-2.29c.25-.27.55-.34.73-.34h.52c.17 0 .4-.06.62.48.24.57.8 1.96.87 2.1.07.14.12.3.02.48-.09.19-.14.3-.28.46-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.27.72 1.18 1.54 1.92 1.06.94 1.95 1.24 2.22 1.38.27.14.43.12.59-.07.16-.19.68-.79.86-1.07.18-.27.36-.22.61-.13.25.09 1.6.75 1.87.89.27.14.46.2.53.31.07.12.07.66-.17 1.34z"/></svg>
+                  ${novo ? "Msg 1" : "Msg "+etapa}
+                </button>
+              </div>`;
+            }).join("") : `<div class="vazio">Importe a planilha para começar.</div>`}
+          </div>
+        </section>
+      </div>
+
+      <div class="home-dir">
+        <!-- prioridade -->
+        <section class="card">
+          <div class="card-tit"><h2>Por prioridade</h2></div>
+          <div class="barras">
+            ${prio.map(([p,q]) => `
+              <div class="barra" data-filtro-prio="${p}" style="cursor:pointer">
+                <div class="lin"><span>${p} — ${p==="A"?"sem site, dono acessível":p==="B"?"sem site, estrutura maior":p==="C"?"tem site, perfil pequeno":"tem site, consolidado"}</span><span>${q}</span></div>
+                <div class="trilho"><div class="fill" style="width:${k.total?(q/k.total*100).toFixed(1):0}%;background:${corPrioridade(p)}"></div></div>
+              </div>`).join("")}
+          </div>
+        </section>
+
+        <!-- cidade -->
+        <section class="card">
+          <div class="card-tit"><h2>Por cidade</h2></div>
+          <div class="barras">
+            ${cidades.map(([c,q]) => `
+              <div class="barra" data-filtro-cidade="${esc(c)}" style="cursor:pointer">
+                <div class="lin"><span>${esc(c)}</span><span>${q}</span></div>
+                <div class="trilho"><div class="fill" style="width:${(q/maxCid*100).toFixed(1)}%;background:linear-gradient(90deg,var(--tangelo),var(--orange))"></div></div>
+              </div>`).join("")}
+          </div>
+        </section>
+
+        <!-- resumo financeiro -->
+        <section class="card">
+          <div class="card-tit">
+            <h2>Financeiro</h2>
+            <button class="btn btn-sm" data-ir="financeiro" style="margin-left:auto">Abrir</button>
+          </div>
+          ${estado.contratos.length ? `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+              <div style="background:var(--surface-2);border-radius:var(--r-sm);padding:12px">
+                <div style="font-size:11.5px;color:var(--text-dim)">Recebido no mês</div>
+                <div style="font-size:19px;font-weight:700;color:#7ED3A0;margin-top:3px">${fmtMoedaCurta(fin.recebidoMes)}</div>
+              </div>
+              <div style="background:var(--surface-2);border-radius:var(--r-sm);padding:12px">
+                <div style="font-size:11.5px;color:var(--text-dim)">Recorrente/mês</div>
+                <div style="font-size:19px;font-weight:700;margin-top:3px">${fmtMoedaCurta(fin.mrr)}</div>
+              </div>
+            </div>
+            ${fin.atrasado > 0 ? `
+              <button class="hoje-item" data-ir="financeiro" style="width:100%;text-align:left">
+                <div class="atraso"><div class="n">${fin.qtdAtrasadas}</div><div class="u">${fin.qtdAtrasadas===1?"cobr.":"cobrs."}</div></div>
+                <div class="info">
+                  <div class="nome">${fmtMoeda(fin.atrasado)} em atraso</div>
+                  <div class="meta">clientes que já deviam ter pago</div>
+                </div>
+              </button>`
+            : `<div style="font-size:12.5px;color:var(--text-dim)">Nenhuma cobrança atrasada. ${fin.ativos} cliente${fin.ativos===1?"":"s"} ativo${fin.ativos===1?"":"s"}.</div>`}
+          ` : `
+            <div style="font-size:12.5px;color:var(--text-dim);line-height:1.6">
+              Nenhum contrato ainda. Quando fechar um lead, crie o contrato para acompanhar o que entra.
+              <div style="margin-top:12px"><button class="btn btn-sm btn-primario" data-novo-contrato>Novo contrato</button></div>
+            </div>`}
+        </section>
+
+        <!-- atividades -->
+        <section class="card">
+          <div class="card-tit"><h2>Últimas atividades</h2></div>
+          ${ativ.length ? ativ.map(a => `
+            <div class="ativ" data-lead="${esc(a.lead.id)}">
+              <div class="ic">M${a.etapa}</div>
+              <div class="tx"><b>${esc(a.lead.nome)}</b><small>${esc(a.lead.cidade)} · mensagem ${a.etapa}</small></div>
+              <div class="dt">${fmtRelativo(a.data)}</div>
+            </div>`).join("")
+          : `<div class="vazio">Nenhum envio registrado ainda. Assim que você confirmar o primeiro, ele aparece aqui.</div>`}
+        </section>
+      </div>
+    </div>`;
+
+  $("#conteudo").innerHTML = html;
+  ligarTooltipGrafico(pontos);
+}
+
+/* ---------------------------------------------------------------------------
+   10. RENDERIZAÇÃO — LEADS
+   ------------------------------------------------------------------------ */
+
+function leadsFiltrados(){
+  const f = ui.filtros;
+  const q = norm(ui.busca);
+
+  let out = estado.leads.filter(l => {
+    if(f.cidade     && l.cidade     !== f.cidade)     return false;
+    if(f.nicho      && l.nicho      !== f.nicho)      return false;
+    if(f.prioridade && l.prioridade !== f.prioridade) return false;
+    if(f.site       && norm(l.temSite) !== norm(f.site)) return false;
+    if(f.estagio){
+      const ch = calcFunil(l).chave;
+      if(f.estagio === "vencidos"){ if(!VENCIDOS.includes(ch)) return false; }
+      else if(ch !== f.estagio) return false;
+    }
+    if(q){
+      const alvo = norm(l.nome) + " " + norm(l.endereco) + " " + l.telDigitos + " " + norm(l.telefone) + " " + norm(l.bairro);
+      if(!alvo.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const ordemPrio = { A:0, B:1, C:2, D:3 };
+  const cmp = {
+    oportunidade: (a,b) => b.oportunidade - a.oportunidade || (ordemPrio[a.prioridade]??9)-(ordemPrio[b.prioridade]??9) || a.nome.localeCompare(b.nome,"pt-BR"),
+    avaliacoes:   (a,b) => (b.avaliacoes||0) - (a.avaliacoes||0),
+    nome:         (a,b) => a.nome.localeCompare(b.nome,"pt-BR"),
+    atraso:       (a,b) => calcFunil(b).atraso - calcFunil(a).atraso || b.oportunidade - a.oportunidade
+  }[ui.ordem];
+
+  return out.sort(cmp);
+}
+
+function opcoesUnicas(campo){
+  return Array.from(new Set(estado.leads.map(l => l[campo]).filter(Boolean))).sort((a,b)=>a.localeCompare(b,"pt-BR"));
+}
+
+function cardLead(l){
+  const f = calcFunil(l);
+  const s = classeSite(l.temSite);
+  return `
+  <article class="lead-card" data-lead="${esc(l.id)}" style="border-left-color:${corPrioridade(l.prioridade)}">
+    <div class="topo">
+      <div style="min-width:0">
+        <h3>${esc(l.nome)}</h3>
+        <div class="sub">${esc(l.nicho)} · ${esc(l.cidade)}${l.bairro?" · "+esc(l.bairro):""}</div>
+      </div>
+      <div class="prio-tag" style="background:${corPrioridade(l.prioridade)}" title="Prioridade ${esc(l.prioridade)}">${esc(l.prioridade)}</div>
+    </div>
+    <div class="nota">
+      <span class="estrela">★</span><b>${l.nota != null ? l.nota.toFixed(1).replace(".",",") : "—"}</b>
+      <span>(${l.avaliacoes != null ? l.avaliacoes : 0} avaliações)</span>
+    </div>
+    <div class="tags">
+      <span class="tag ${s.cls}">${s.txt}</span>
+      ${l.oportunidade ? `<span class="tag t-tem">Oport. ${l.oportunidade}/5</span>` : ""}
+      ${l.telTipo === "fixo" ? `<span class="tag t-ver">Fixo</span>` : ""}
+      ${l.telTipo === "especial" ? `<span class="tag t-ver">Sem WhatsApp</span>` : ""}
+    </div>
+    <div class="estagio"><i style="background:${f.cor}"></i>${esc(f.rotulo)}${f.atraso ? ` · ${f.atraso}d atrasado` : ""}</div>
+  </article>`;
+}
+
+function tabelaLeads(lista){
+  return `
+  <div class="tab-wrap"><table>
+    <thead><tr>
+      <th>Negócio</th><th>Nicho</th><th>Cidade</th><th>Google</th>
+      <th>Site</th><th>Prio</th><th>Op.</th><th>Estágio</th><th>Último envio</th>
+    </tr></thead>
+    <tbody>
+      ${lista.map(l => {
+        const f = calcFunil(l), s = classeSite(l.temSite), u = ultimoEnvio(l);
+        return `<tr data-lead="${esc(l.id)}">
+          <td class="td-nome">${esc(l.nome)}<small>${esc(l.bairro||l.endereco||"")}</small></td>
+          <td>${esc(l.nicho)}</td>
+          <td>${esc(l.cidade)}</td>
+          <td><span class="estrela">★</span> ${l.nota != null ? l.nota.toFixed(1).replace(".",",") : "—"} <span style="color:var(--text-dim)">(${l.avaliacoes||0})</span></td>
+          <td><span class="tag ${s.cls}">${s.txt}</span></td>
+          <td><span class="prio-tag" style="background:${corPrioridade(l.prioridade)}">${esc(l.prioridade)}</span></td>
+          <td>${l.oportunidade||"—"}</td>
+          <td><span class="estagio" style="margin:0"><i style="background:${f.cor}"></i>${esc(f.rotulo)}${f.atraso?` (${f.atraso}d)`:""}</span></td>
+          <td style="color:var(--text-dim);white-space:nowrap">${u ? `M${u.etapa} · ${fmtRelativo(u.data)}` : "—"}</td>
+        </tr>`;
+      }).join("")}
+    </tbody>
+  </table></div>`;
+}
+
+function renderLeads(){
+  const lista = leadsFiltrados();
+  const f = ui.filtros;
+  const sel = (nome, valor, itens, rotulo) => `
+    <select class="sel" data-filtro="${nome}">
+      <option value="">${rotulo}</option>
+      ${itens.map(i => `<option value="${esc(i.v ?? i)}" ${String(valor) === String(i.v ?? i) ? "selected" : ""}>${esc(i.r ?? i)}</option>`).join("")}
+    </select>`;
+
+  $("#conteudo").innerHTML = `
+    <h1 class="pagina">Leads</h1>
+    <div class="filtros">
+      ${sel("cidade", f.cidade, opcoesUnicas("cidade"), "Todas as cidades")}
+      ${sel("nicho", f.nicho, opcoesUnicas("nicho"), "Todos os nichos")}
+      ${sel("prioridade", f.prioridade, ["A","B","C","D"], "Toda prioridade")}
+      ${sel("site", f.site, [{v:"Nao",r:"Sem site"},{v:"Sim",r:"Tem site"},{v:"A verificar",r:"A verificar"}], "Site: todos")}
+      ${sel("estagio", f.estagio, [{v:"vencidos",r:"⚠ Qualquer vencido"}].concat(Object.keys(ESTAGIOS).map(k => ({v:k, r:ESTAGIOS[k].rotulo}))), "Todo estágio")}
+      <select class="sel" data-ordem>
+        <option value="oportunidade" ${ui.ordem==="oportunidade"?"selected":""}>Ordem: oportunidade</option>
+        <option value="avaliacoes"   ${ui.ordem==="avaliacoes"?"selected":""}>Ordem: nº de avaliações</option>
+        <option value="nome"         ${ui.ordem==="nome"?"selected":""}>Ordem: nome</option>
+        <option value="atraso"       ${ui.ordem==="atraso"?"selected":""}>Ordem: mais atrasado</option>
+      </select>
+      ${(f.cidade||f.nicho||f.prioridade||f.site||f.estagio||ui.busca) ? `<button class="btn btn-sm" data-limpar>Limpar filtros</button>` : ""}
+      <div class="toggle-vis">
+        <button class="${ui.visao==="grade"?"ativo":""}" data-visao="grade" title="Cards">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <button class="${ui.visao==="tabela"?"ativo":""}" data-visao="tabela" title="Tabela">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="contagem"><b>${lista.length}</b> de ${estado.leads.length} leads${ui.busca?` · busca "${esc(ui.busca)}"`:""}</div>
+    ${lista.length
+      ? (ui.visao === "grade" ? `<div class="grade">${lista.map(cardLead).join("")}</div>` : tabelaLeads(lista))
+      : `<div class="vazio">Nenhum lead com esses filtros.</div>`}
+  `;
+}
+
+/* ---------------------------------------------------------------------------
+   10b. TELA FINANCEIRO
+   ------------------------------------------------------------------------ */
+
+/** Barras de faturamento por mês: recebido cheio, previsto translúcido. */
+function svgFaturamento(serie){
+  const L = 1000, A = 220, padE = 62, padD = 12, padT = 14, padB = 28;
+  const larg = L - padE - padD, alt = A - padT - padB;
+  const maxV = Math.max(1, ...serie.map(s => s.recebido + s.previsto));
+  const topo = Math.max(1, maxV * 1.2);
+  const n = serie.length;
+  const passoX = larg / n;
+  const largBarra = Math.min(46, passoX * 0.56);
+
+  let grade = "", eixoY = "";
+  for(let i = 0; i <= 3; i++){
+    const val = topo * (1 - i/3);
+    const py = padT + (alt * i / 3);
+    grade += `<line x1="${padE}" y1="${py.toFixed(1)}" x2="${L-padD}" y2="${py.toFixed(1)}" stroke="#3A2E27" stroke-width="1" stroke-dasharray="3 6" opacity=".55"/>`;
+    eixoY += `<text x="${padE-10}" y="${(py+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#A99B91">${fmtMoedaCurta(val)}</text>`;
+  }
+
+  let barras = "", rotulos = "";
+  serie.forEach((s,i) => {
+    const cx = padE + passoX * i + passoX/2;
+    const x  = cx - largBarra/2;
+    const hR = (s.recebido / topo) * alt;
+    const hP = (s.previsto / topo) * alt;
+    const baseY = padT + alt;
+
+    if(hR > 0) barras += `<rect x="${x.toFixed(1)}" y="${(baseY-hR).toFixed(1)}" width="${largBarra.toFixed(1)}" height="${hR.toFixed(1)}" rx="5" fill="url(#gradBarra)"/>`;
+    if(hP > 0) barras += `<rect x="${x.toFixed(1)}" y="${(baseY-hR-hP).toFixed(1)}" width="${largBarra.toFixed(1)}" height="${hP.toFixed(1)}" rx="5" fill="#F37100" opacity=".24" stroke="#F37100" stroke-opacity=".45" stroke-width="1"/>`;
+    if(hR + hP === 0) barras += `<rect x="${x.toFixed(1)}" y="${(baseY-3).toFixed(1)}" width="${largBarra.toFixed(1)}" height="3" rx="1.5" fill="#3A2E27"/>`;
+
+    rotulos += `<text x="${cx.toFixed(1)}" y="${A-8}" text-anchor="middle" font-size="11" fill="#A99B91">${fmtMes(s.mes)}</text>`;
+    if(s.recebido > 0)
+      rotulos += `<text x="${cx.toFixed(1)}" y="${(baseY-hR-hP-7).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#F5EFEA">${fmtMoedaCurta(s.recebido)}</text>`;
+  });
+
+  return `
+  <svg viewBox="0 0 ${L} ${A}" class="fatura-svg" preserveAspectRatio="none">
+    <defs><linearGradient id="gradBarra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F3500A"/><stop offset="100%" stop-color="#F37100"/>
+    </linearGradient></defs>
+    ${grade}${eixoY}${barras}${rotulos}
+  </svg>`;
+}
+
+/** Uma linha de cobrança, usada na tela Financeiro e no painel do lead. */
+function linhaCobranca({cob, contrato, situacao}){
+  const d = paraData(cob.vencimento);
+  const dias = diasEntre(hojeISO(), cob.vencimento);
+  const temLink = !!estado.planos.find(p => p.id === contrato.planoId);
+  return `
+  <div class="cob-item ${situacao}">
+    <div class="venc">
+      <div class="n">${String(d.getDate()).padStart(2,"0")}</div>
+      <div class="u">${MESES[d.getMonth()]}</div>
+    </div>
+    <div class="info">
+      <b>${esc(contrato.cliente)}</b>
+      <small>${esc(cob.descricao)} · ${
+        situacao === "paga"     ? "paga em " + fmtData(cob.pagoEm) :
+        situacao === "atrasada" ? `<span style="color:#FF8A5C">venceu há ${Math.abs(dias)} dia${Math.abs(dias)===1?"":"s"}</span>` :
+        dias === 0 ? "vence hoje" : `vence em ${dias} dia${dias===1?"":"s"}`
+      }${cob.enviadaEm && situacao !== "paga" ? " · link enviado " + fmtRelativo(cob.enviadaEm) : ""}</small>
+    </div>
+    <div class="vlr">${fmtMoeda(cob.valor)}</div>
+    <div class="acoes">
+      ${situacao !== "paga" ? `
+        <button class="btn btn-sm" data-cobrar="${esc(cob.id)}" ${(!contrato.wa || !temLink) ? "disabled" : ""}
+          title="${!contrato.wa ? "Contrato sem WhatsApp" : !temLink ? "Vincule um link de pagamento ao contrato" : "Abrir WhatsApp com o link de pagamento"}">Cobrar</button>
+        <button class="btn btn-sm btn-primario" data-pagar="${esc(cob.id)}">Recebi</button>
+      ` : `
+        <span class="selo-fin sf-paga">Paga</span>
+        <button class="btn btn-sm" data-despagar="${esc(cob.id)}" title="Desfazer">↺</button>
+      `}
+    </div>
+  </div>`;
+}
+
+function renderFinanceiro(){
+  const k = kpisFinanceiros();
+  const serie = serieFaturamento(12);
+  const pendentes = cobrancasPendentes(15);
+  const ativos = estado.contratos.filter(c => c.status === "ativo");
+  const encerrados = estado.contratos.filter(c => c.status !== "ativo");
+
+  $("#conteudo").innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px">
+      <h1 class="pagina" style="margin:0">Financeiro</h1>
+      <button class="btn btn-primario" data-novo-contrato style="margin-left:auto">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Novo contrato
+      </button>
+    </div>
+
+    <div class="fin-kpis">
+      <div class="kpi verde">
+        <div class="rot"><span class="pt"></span>Recebido no mês</div>
+        <div class="val moeda">${fmtMoedaCurta(k.recebidoMes)}</div>
+        <div class="rodape">${fmtMoedaCurta(k.recebidoTotal)} desde o início</div>
+      </div>
+      <div class="kpi">
+        <div class="rot"><span class="pt" style="background:var(--orange)"></span>A receber no mês</div>
+        <div class="val moeda">${fmtMoedaCurta(k.aReceberMes)}</div>
+        <div class="rodape">vencimentos de ${fmtMes(mesDe(hojeISO()))}</div>
+      </div>
+      <div class="kpi ${k.atrasado > 0 ? "destaque" : ""}">
+        <div class="rot"><span class="pt"></span>Em atraso</div>
+        <div class="val moeda">${fmtMoedaCurta(k.atrasado)}</div>
+        <div class="rodape">${k.qtdAtrasadas} cobrança${k.qtdAtrasadas===1?"":"s"} vencida${k.qtdAtrasadas===1?"":"s"}</div>
+      </div>
+      <div class="kpi">
+        <div class="rot"><span class="pt" style="background:var(--tangelo)"></span>Recorrente (MRR)</div>
+        <div class="val moeda">${fmtMoedaCurta(k.mrr)}</div>
+        <div class="rodape">todo mês, de mensalidades</div>
+      </div>
+      <div class="kpi">
+        <div class="rot"><span class="pt" style="background:var(--verde)"></span>Clientes ativos</div>
+        <div class="val">${k.ativos}</div>
+        <div class="rodape">${k.total} contrato${k.total===1?"":"s"} no total</div>
+      </div>
+    </div>
+
+    ${!estado.contratos.length ? `
+      <section class="card">
+        <div class="vazio" style="padding:40px 22px">
+          <div style="font-size:15px;color:var(--text);font-weight:600;margin-bottom:8px">Nenhum contrato ainda</div>
+          Quando você fechar um lead, crie o contrato aqui: valor de criação, mensalidade, ou os dois.<br>
+          O painel passa a acompanhar o que entrou, o que falta e quem está atrasado.
+          <div style="margin-top:20px"><button class="btn btn-primario" data-novo-contrato>Criar o primeiro contrato</button></div>
+        </div>
+      </section>
+    ` : `
+      <div class="home-grid">
+        <div class="home-esq">
+
+          <section class="card">
+            <div class="card-tit">
+              <h2>Faturamento por mês</h2>
+              <span class="sub">barra cheia = recebido · translúcida = previsto</span>
+            </div>
+            ${svgFaturamento(serie)}
+          </section>
+
+          <section class="card">
+            <div class="card-tit">
+              <h2>Cobranças a acompanhar</h2>
+              <span class="sub">atrasadas primeiro, depois o que vence em até 1 mês</span>
+            </div>
+            ${pendentes.length
+              ? pendentes.map(linhaCobranca).join("")
+              : `<div class="vazio">Nada atrasado nem vencendo agora. Tudo em dia.</div>`}
+          </section>
+        </div>
+
+        <div class="home-dir">
+          <section class="card">
+            <div class="card-tit"><h2>Contratos ativos</h2><span class="sub">${ativos.length}</span></div>
+            <div style="display:grid;gap:12px">
+              ${ativos.length ? ativos.map(cardContrato).join("") : `<div class="vazio">Nenhum contrato ativo.</div>`}
+            </div>
+          </section>
+          ${encerrados.length ? `
+          <section class="card">
+            <div class="card-tit"><h2>Encerrados</h2><span class="sub">${encerrados.length}</span></div>
+            <div style="display:grid;gap:12px">${encerrados.map(cardContrato).join("")}</div>
+          </section>` : ""}
+        </div>
+      </div>
+    `}`;
+}
+
+function cardContrato(ct){
+  const r = resumoContrato(ct);
+  const pct = r.total > 0 ? (r.pago / r.total * 100) : 0;
+  const plano = estado.planos.find(p => p.id === ct.planoId);
+  return `
+  <article class="ctr-card ${ct.status !== "ativo" ? "encerrado" : ""}">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+      <div style="min-width:0">
+        <h3>${esc(ct.cliente)}</h3>
+        <div class="sub">${esc(ct.cidade || "—")}${ct.mensalidade && ct.mensalidade.valor > 0 ? ` · ${fmtMoeda(ct.mensalidade.valor)}/mês` : " · sem mensalidade"}</div>
+      </div>
+      <button class="btn btn-sm" data-editar-contrato="${esc(ct.id)}">Editar</button>
+    </div>
+    <div class="ctr-valores">
+      <div>Recebido<b style="color:#7ED3A0">${fmtMoeda(r.pago)}</b></div>
+      <div>Em aberto<b>${fmtMoeda(r.aberto)}</b></div>
+      ${r.atrasado > 0 ? `<div>Atrasado<b style="color:#FF8A5C">${fmtMoeda(r.atrasado)}</b></div>` : ""}
+    </div>
+    <div class="ctr-prog"><i style="width:${pct.toFixed(1)}%"></i></div>
+    <div style="font-size:11.5px;color:var(--text-dim)">
+      ${plano ? `Link: ${esc(plano.nome)}` : `<span style="color:#F7A24F">sem link de pagamento vinculado</span>`}
+    </div>
+  </article>`;
+}
+
+/* ---------------------------------------------------------------------------
+   10c. FORMULÁRIO DE CONTRATO
+   ------------------------------------------------------------------------ */
+
+/**
+ * Abre o formulário de contrato.
+ * leadId preenche os dados a partir de um lead fechado; contratoId edita um existente.
+ */
+function abrirFormContrato(leadId, contratoId){
+  const ct   = contratoId ? estado.contratos.find(c => c.id === contratoId) : null;
+  const lead = leadId ? estado.leads.find(l => l.id === leadId) : null;
+  const hoje = hojeISO();
+
+  const v = {
+    cliente:  ct ? ct.cliente  : (lead ? lead.nome : ""),
+    cidade:   ct ? ct.cidade   : (lead ? lead.cidade : ""),
+    telefone: ct ? ct.telefone : (lead ? lead.telefone : ""),
+    setupValor:   ct ? (ct.setup ? ct.setup.valor : 0) : "",
+    setupParc:    ct && ct.setup ? (ct.setup.parcelas || 1) : 1,
+    setupVenc:    ct && ct.setup ? ct.setup.primeiroVenc : hoje,
+    mensValor:    ct && ct.mensalidade ? ct.mensalidade.valor : "",
+    mensDia:      ct && ct.mensalidade ? ct.mensalidade.diaVencimento : 10,
+    mensInicio:   ct && ct.mensalidade ? ct.mensalidade.inicio : addMeses(hoje, 1),
+    mensAte:      ct && ct.mensalidade ? (ct.mensalidade.ate || "") : "",
+    planoId:  ct ? ct.planoId : "",
+    obs:      ct ? ct.obs : "",
+    status:   ct ? ct.status : "ativo"
+  };
+
+  const bg = $("#modal-bg"), m = $("#modal");
+  m.classList.add("largo");
+  m.innerHTML = `
+    <h3>${ct ? "Editar contrato" : "Novo contrato"}</h3>
+    <p>${ct ? "As cobranças já geradas são preservadas. Mudar a mensalidade afeta só os meses futuros."
+            : "Preencha só o que se aplica: pode ser só criação, só mensalidade, ou os dois."}</p>
+
+    <div class="form-sec">Cliente</div>
+    <div class="form-lin">
+      <div class="form-cp" style="flex:2"><label>Nome do cliente *</label>
+        <input type="text" id="f-cliente" value="${esc(v.cliente)}" placeholder="Clínica Exemplo"></div>
+      <div class="form-cp"><label>Cidade</label>
+        <input type="text" id="f-cidade" value="${esc(v.cidade)}"></div>
+    </div>
+    <div class="form-lin">
+      <div class="form-cp"><label>Telefone (WhatsApp da cobrança)</label>
+        <input type="text" id="f-telefone" value="${esc(v.telefone)}" placeholder="(31) 99999-9999"></div>
+      <div class="form-cp"><label>Link de pagamento</label>
+        <select id="f-plano">
+          <option value="">— sem link vinculado —</option>
+          ${estado.planos.map(p => `<option value="${esc(p.id)}" ${v.planoId===p.id?"selected":""}>${esc(p.nome)} · ${fmtMoeda(p.valor)}</option>`).join("")}
+        </select>
+        <small>${estado.planos.length ? "Cadastre mais links em Ajustes." : "Nenhum link cadastrado — cadastre em Ajustes."}</small></div>
+    </div>
+
+    <div class="form-sec">Criação do site (valor único)</div>
+    ${ct ? `<div class="previa">As parcelas da criação já foram geradas e não são recalculadas na edição, para não apagar o que você já recebeu.</div>` : ""}
+    <div class="form-lin">
+      <div class="form-cp"><label>Valor total</label>
+        <input type="number" id="f-setup-valor" min="0" step="50" value="${v.setupValor}" placeholder="0" ${ct?"disabled":""}></div>
+      <div class="form-cp"><label>Parcelas</label>
+        <input type="number" id="f-setup-parc" min="1" max="24" value="${v.setupParc}" ${ct?"disabled":""}></div>
+      <div class="form-cp"><label>1º vencimento</label>
+        <input type="date" id="f-setup-venc" value="${v.setupVenc}" ${ct?"disabled":""}></div>
+    </div>
+
+    <div class="form-sec">Mensalidade (hospedagem / manutenção)</div>
+    <div class="form-lin">
+      <div class="form-cp"><label>Valor por mês</label>
+        <input type="number" id="f-mens-valor" min="0" step="10" value="${v.mensValor}" placeholder="0"></div>
+      <div class="form-cp"><label>Dia do vencimento</label>
+        <input type="number" id="f-mens-dia" min="1" max="31" value="${v.mensDia}"></div>
+      <div class="form-cp"><label>Começa em</label>
+        <input type="date" id="f-mens-inicio" value="${v.mensInicio}"></div>
+      <div class="form-cp"><label>Até (opcional)</label>
+        <input type="date" id="f-mens-ate" value="${v.mensAte}">
+        <small>vazio = sem prazo</small></div>
+    </div>
+
+    <div class="form-sec">Outros</div>
+    <div class="form-lin">
+      ${ct ? `<div class="form-cp"><label>Situação</label>
+        <select id="f-status">
+          <option value="ativo"     ${v.status==="ativo"?"selected":""}>Ativo</option>
+          <option value="encerrado" ${v.status!=="ativo"?"selected":""}>Encerrado</option>
+        </select></div>` : ""}
+      <div class="form-cp" style="flex:3"><label>Observação</label>
+        <input type="text" id="f-obs" value="${esc(v.obs)}" placeholder="o que foi combinado"></div>
+    </div>
+
+    <div class="previa" id="f-previa"></div>
+
+    <div class="modal-acoes">
+      ${ct ? `<button class="btn btn-perigo" id="f-excluir">Excluir contrato</button>` : ""}
+      <button class="btn" id="f-cancelar">Cancelar</button>
+      <button class="btn btn-primario" id="f-salvar">${ct ? "Salvar alterações" : "Criar contrato"}</button>
+    </div>`;
+  bg.classList.add("aberto");
+
+  /* prévia do que será gerado, atualizada enquanto digita */
+  function atualizarPrevia(){
+    const sv = parseFloat($("#f-setup-valor").value) || 0;
+    const sp = parseInt($("#f-setup-parc").value,10) || 1;
+    const mv = parseFloat($("#f-mens-valor").value) || 0;
+    const partes = [];
+    if(sv > 0) partes.push(sp > 1
+      ? `<b>${sp}x de ${fmtMoeda(sv/sp)}</b> pela criação (total ${fmtMoeda(sv)})`
+      : `<b>${fmtMoeda(sv)}</b> pela criação, à vista`);
+    if(mv > 0) partes.push(`<b>${fmtMoeda(mv)}/mês</b> de mensalidade — os próximos ${estado.config.mesesGerar} meses já entram como previsto`);
+    $("#f-previa").innerHTML = partes.length
+      ? "Vai gerar: " + partes.join("<br>")
+      : "Informe ao menos um valor: criação ou mensalidade.";
+  }
+  ["f-setup-valor","f-setup-parc","f-mens-valor"].forEach(id => {
+    const el = $("#"+id); if(el) el.addEventListener("input", atualizarPrevia);
+  });
+  atualizarPrevia();
+  $("#f-cliente").focus();
+
+  const fechar = () => { bg.classList.remove("aberto"); m.classList.remove("largo"); };
+  $("#f-cancelar").onclick = fechar;
+  bg.onclick = (e) => { if(e.target === bg) fechar(); };
+
+  if($("#f-excluir")) $("#f-excluir").onclick = async () => {
+    fechar();
+    const ok = await confirmar({
+      titulo:"Excluir este contrato?",
+      texto:`<b>${esc(ct.cliente)}</b><br>Some o contrato e todas as cobranças dele, inclusive as já marcadas como pagas. O histórico de faturamento muda.`,
+      ok:"Excluir", perigo:true
+    });
+    if(!ok) return;
+    estado.contratos = estado.contratos.filter(c => c.id !== ct.id);
+    salvar(); renderTudo(); toast("Contrato excluído.");
+  };
+
+  $("#f-salvar").onclick = () => {
+    const cliente = $("#f-cliente").value.trim();
+    if(!cliente){ toast("Informe o nome do cliente.", true); return $("#f-cliente").focus(); }
+
+    const sv = parseFloat($("#f-setup-valor").value) || 0;
+    const mv = parseFloat($("#f-mens-valor").value) || 0;
+    if(!ct && sv <= 0 && mv <= 0) return toast("Informe o valor da criação ou da mensalidade.", true);
+
+    const tel = classificaTelefone($("#f-telefone").value);
+    const dados = {
+      leadId: leadId || (ct ? ct.leadId : null),
+      cliente,
+      cidade: $("#f-cidade").value.trim(),
+      telefone: $("#f-telefone").value.trim(),
+      wa: tel.wa,
+      planoId: $("#f-plano").value || null,
+      obs: $("#f-obs").value.trim(),
+      status: $("#f-status") ? $("#f-status").value : "ativo",
+      setup: sv > 0 ? {
+        valor: sv,
+        parcelas: parseInt($("#f-setup-parc").value,10) || 1,
+        primeiroVenc: $("#f-setup-venc").value || hoje
+      } : null,
+      mensalidade: mv > 0 ? {
+        valor: mv,
+        diaVencimento: parseInt($("#f-mens-dia").value,10) || 10,
+        inicio: $("#f-mens-inicio").value || addMeses(hoje,1),
+        ate: $("#f-mens-ate").value || null
+      } : null
+    };
+
+    salvarContrato(dados, ct);   // já marca o lead de origem como Fechado
+    fechar();
+    toast(ct ? "Contrato atualizado." : `Contrato de ${cliente} criado.`);
+    if(!ct) ui.tela = "financeiro";
+    renderTudo();
+    $$(".rail-btn[data-tela]").forEach(b => b.classList.toggle("ativo", b.dataset.tela === ui.tela));
+  };
+}
+
+/** Formulário de link de pagamento do Asaas. */
+function abrirFormPlano(planoId){
+  const p = planoId ? estado.planos.find(x => x.id === planoId) : null;
+  const bg = $("#modal-bg"), m = $("#modal");
+  m.innerHTML = `
+    <h3>${p ? "Editar link" : "Novo link de pagamento"}</h3>
+    <p>Crie o link no painel do Asaas e cole a URL aqui. Esse link é usado no botão <b>Cobrar</b>.</p>
+    <div class="form-lin">
+      <div class="form-cp" style="flex:2"><label>Nome do plano *</label>
+        <input type="text" id="p-nome" value="${p?esc(p.nome):""}" placeholder="Site institucional"></div>
+      <div class="form-cp"><label>Valor</label>
+        <input type="number" id="p-valor" min="0" step="50" value="${p?p.valor:""}" placeholder="1800"></div>
+    </div>
+    <div class="form-lin">
+      <div class="form-cp"><label>URL do link de pagamento *</label>
+        <input type="text" id="p-url" value="${p?esc(p.url):""}" placeholder="https://www.asaas.com/c/...">
+        <small>Cole a URL inteira, como ela aparece no Asaas.</small></div>
+    </div>
+    <div class="modal-acoes">
+      <button class="btn" id="p-cancelar">Cancelar</button>
+      <button class="btn btn-primario" id="p-salvar">Salvar</button>
+    </div>`;
+  bg.classList.add("aberto");
+  $("#p-nome").focus();
+
+  const fechar = () => bg.classList.remove("aberto");
+  $("#p-cancelar").onclick = fechar;
+  bg.onclick = (e) => { if(e.target === bg) fechar(); };
+
+  $("#p-salvar").onclick = () => {
+    const nome = $("#p-nome").value.trim();
+    const url  = $("#p-url").value.trim();
+    if(!nome) { toast("Dê um nome ao plano.", true); return $("#p-nome").focus(); }
+    if(!/^https?:\/\//i.test(url)) { toast("A URL precisa começar com https://", true); return $("#p-url").focus(); }
+    const valor = parseFloat($("#p-valor").value) || 0;
+
+    if(p){ Object.assign(p, { nome, url, valor }); }
+    else  { estado.planos.push({ id: idNovo("pln"), nome, url, valor }); }
+    salvar(); fechar(); renderTudo();
+    toast(p ? "Link atualizado." : "Link cadastrado.");
+  };
+}
+
+/* ---------------------------------------------------------------------------
+   11. PAINEL DE DETALHE
+   ------------------------------------------------------------------------ */
+
+function abrirPainel(id){
+  const l = estado.leads.find(x => x.id === id);
+  if(!l) return;
+  ui.leadAberto = id;
+
+  const f = calcFunil(l);
+  const s = classeSite(l.temSite);
+  const enviadas = new Map((l.historico||[]).map(h => [h.etapa, h.data]));
+  const prox = f.proximaEtapa;
+
+  const campo = (rot, val) => val ? `<div class="linha-campo"><div class="rot">${rot}</div><div class="vl">${esc(val)}</div></div>` : "";
+
+  const blocoMsg = (i) => {
+    const texto = (l.msgs && l.msgs[i-1]) || "";
+    const dataEnv = enviadas.get(i);
+    const pendente = (prox === i) && VENCIDOS.concat(["nao_contatado"]).includes(f.chave);
+    const rotulos = ["Primeiro contato", `Follow-up (${estado.config.prazo2} dias)`, `Follow-up (${estado.config.prazo3} dias)`, `Encerramento (${estado.config.prazo4} dias)`];
+    if(!texto) return `<div class="msg-box"><div class="msg-cab"><span class="n">Mensagem ${i}</span></div><div class="msg-txt">— sem texto na planilha —</div></div>`;
+    return `
+    <div class="msg-box ${dataEnv?"enviada":""} ${pendente?"pendente":""}">
+      <div class="msg-cab">
+        <span class="n">Msg ${i} · ${rotulos[i-1]}</span>
+        ${dataEnv ? `<span class="msg-selo selo-ok">enviada ${fmtRelativo(dataEnv)}</span>` : ""}
+        ${pendente ? `<span class="msg-selo selo-pend">${f.chave==="nao_contatado"?"a enviar":"vencida"}</span>` : ""}
+      </div>
+      <div class="msg-txt" data-msg-txt>${esc(texto)}</div>
+      ${texto.length > 260 ? `<div class="msg-mais" data-expandir>ver mensagem inteira ↓</div>` : ""}
+      <div class="msg-acoes">
+        <button class="btn ${pendente?"btn-primario":""} btn-sm" data-wa="${esc(l.id)}" data-etapa="${i}" ${!l.wa?"disabled":""} title="${!l.wa?"Número sem WhatsApp":""}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.13c-.24.68-1.42 1.31-1.96 1.36-.5.05-.98.24-3.3-.69-2.79-1.1-4.56-3.96-4.7-4.14-.14-.19-1.12-1.49-1.12-2.84s.71-2.01.96-2.29c.25-.27.55-.34.73-.34h.52c.17 0 .4-.06.62.48.24.57.8 1.96.87 2.1.07.14.12.3.02.48-.09.19-.14.3-.28.46-.14.16-.29.36-.42.48-.14.14-.28.29-.12.57.16.27.72 1.18 1.54 1.92 1.06.94 1.95 1.24 2.22 1.38.27.14.43.12.59-.07.16-.19.68-.79.86-1.07.18-.27.36-.22.61-.13.25.09 1.6.75 1.87.89.27.14.46.2.53.31.07.12.07.66-.17 1.34z"/></svg>
+          Enviar no WhatsApp
+        </button>
+        <button class="btn btn-sm" data-copiar="${i}">Copiar</button>
+        ${dataEnv ? `<button class="btn btn-sm" data-desmarcar="${i}" title="Registrei por engano">Desmarcar</button>` : ""}
+      </div>
+    </div>`;
+  };
+
+  $("#painel").innerHTML = `
+    <div class="painel-topo">
+      <div style="min-width:0">
+        <h2>${esc(l.nome)}</h2>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-top:5px">
+          ${esc(l.nicho)} · ${esc(l.cidade)}${l.bairro?" · "+esc(l.bairro):""}
+        </div>
+        <div class="tags" style="margin-top:10px">
+          <span class="tag ${s.cls}">${s.txt}</span>
+          <span class="tag t-tem" style="color:${corPrioridade(l.prioridade)}">Prioridade ${esc(l.prioridade)}</span>
+          <span class="tag t-tem"><span class="estrela">★</span> ${l.nota != null ? l.nota.toFixed(1).replace(".",",") : "—"} (${l.avaliacoes||0})</span>
+        </div>
+      </div>
+      <button class="fechar" data-fechar-painel>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="painel-corpo">
+
+      <!-- estágio -->
+      <div class="bloco" style="border-color:${f.cor}44">
+        <h4>Estágio do funil</h4>
+        <div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:650">
+          <i style="width:10px;height:10px;border-radius:99px;background:${f.cor};display:inline-block"></i>
+          ${esc(f.rotulo)}
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-top:8px">
+          ${f.atraso ? `Atrasado <b style="color:#FF8A5C">${f.atraso} dia${f.atraso>1?"s":""}</b> · ` : ""}
+          ${(l.historico||[]).length} de 4 mensagens enviadas${f.diasDesde != null ? ` · último envio ${fmtRelativo(ultimoEnvio(l).data)}` : ""}
+        </div>
+      </div>
+
+      <!-- ações rápidas -->
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <a class="btn btn-sm" href="tel:${esc(l.telDigitos)}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg>
+          Ligar ${fmtTelefone(l.telefone)}
+        </a>
+        <a class="btn btn-sm" href="${linkMaps(l)}" target="_blank" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ver no Google Maps
+        </a>
+      </div>
+
+      ${l.telTipo === "especial" ? `<div class="aviso-tel">⚠ Número 0800/especial — não existe no WhatsApp. Só dá para ligar.</div>` : ""}
+      ${l.telTipo === "fixo" ? `<div class="aviso-tel">⚠ Telefone fixo — pode não ter WhatsApp. O link abre normalmente, mas confira antes de contar com ele.</div>` : ""}
+
+      <!-- contrato vinculado -->
+      ${(() => {
+        const ct = estado.contratos.find(c => c.leadId === l.id);
+        if(ct){
+          const r = resumoContrato(ct);
+          const abertas = (ct.cobrancas||[])
+            .map(c => ({ cob:c, contrato:ct, situacao:statusCobranca(c) }))
+            .filter(x => x.situacao !== "paga" && x.situacao !== "cancelada")
+            .sort((a,b) => a.cob.vencimento.localeCompare(b.cob.vencimento))
+            .slice(0,3);
+          return `
+          <div class="bloco" style="border-color:rgba(79,164,107,.4)">
+            <h4>Contrato · cliente ativo</h4>
+            <div class="ctr-valores" style="margin-bottom:12px">
+              <div>Recebido<b style="color:#7ED3A0">${fmtMoeda(r.pago)}</b></div>
+              <div>Em aberto<b>${fmtMoeda(r.aberto)}</b></div>
+              ${ct.mensalidade && ct.mensalidade.valor > 0 ? `<div>Mensalidade<b>${fmtMoeda(ct.mensalidade.valor)}</b></div>` : ""}
+            </div>
+            ${abertas.length ? abertas.map(linhaCobranca).join("") : `<div style="font-size:12.5px;color:var(--text-dim)">Nenhuma cobrança em aberto.</div>`}
+            <button class="btn btn-sm btn-blk" data-editar-contrato="${esc(ct.id)}" style="margin-top:10px">Editar contrato</button>
+          </div>`;
+        }
+        if(l.statusManual === "Fechado"){
+          return `
+          <div class="bloco" style="border-color:rgba(79,164,107,.4)">
+            <h4>Contrato</h4>
+            <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:11px">
+              Este lead está marcado como <b style="color:var(--text)">Fechado</b> mas ainda não tem contrato.
+              Crie para acompanhar o que ele vai te pagar.
+            </div>
+            <button class="btn btn-primario btn-sm btn-blk" data-contrato-de-lead="${esc(l.id)}">Criar contrato</button>
+          </div>`;
+        }
+        return "";
+      })()}
+
+      <!-- status manual -->
+      <div class="bloco">
+        <h4>Status manual (congela a régua)</h4>
+        <select class="sel" style="width:100%" data-status>
+          <option value="">Nenhum — seguir a régua automática</option>
+          ${STATUS_MANUAIS.map(s2 => `<option value="${esc(s2)}" ${l.statusManual===s2?"selected":""}>${esc(s2)}</option>`).join("")}
+        </select>
+      </div>
+
+      <!-- mensagens -->
+      <div>
+        <h4 style="margin:0 0 11px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim)">As 4 mensagens</h4>
+        ${[1,2,3,4].map(blocoMsg).join("")}
+      </div>
+
+      <!-- observações -->
+      <div class="bloco">
+        <h4>Minhas observações <span class="salvo" id="obs-salvo">salvo ✓</span></h4>
+        <textarea class="obs" data-obs placeholder="O que rolou na conversa, quando retornar, o que ele pediu…">${esc(l.obs||"")}</textarea>
+      </div>
+
+      <!-- dados do lead -->
+      <div class="bloco">
+        <h4>Dados do lead</h4>
+        ${campo("Endereço", l.endereco)}
+        ${campo("Telefone", `${fmtTelefone(l.telefone)} (${l.telRotulo})`)}
+        ${campo("Tem site?", l.temSite)}
+        ${campo("Campo 'site' aponta", l.siteAponta)}
+        ${campo("Porte estimado", l.porte)}
+        ${campo("Falar com o dono", l.chance)}
+        ${campo("Nota de oportunidade", l.oportunidade ? l.oportunidade + "/5" : "")}
+      </div>
+
+      ${l.diagnostico ? `<div class="bloco"><h4>Diagnóstico / gancho de venda</h4><div style="font-size:13px;line-height:1.6;color:var(--text-dim);white-space:pre-wrap">${esc(l.diagnostico)}</div></div>` : ""}
+
+      <!-- histórico -->
+      <div class="bloco">
+        <h4>Histórico de contatos</h4>
+        ${(l.historico||[]).length
+          ? l.historico.map(h => `<div class="hist-item"><span>Mensagem ${h.etapa}</span><span style="color:var(--text-dim)">${fmtData(h.data)} · ${fmtRelativo(h.data)}</span></div>`).join("")
+          : `<div style="font-size:12.5px;color:var(--text-dim)">Nada registrado ainda.</div>`}
+      </div>
+    </div>`;
+
+  $("#painel").classList.add("aberto");
+  $("#painel").setAttribute("aria-hidden","false");
+  $("#overlay").classList.add("aberto");
+}
+
+function fecharPainel(){
+  ui.leadAberto = null;
+  $("#painel").classList.remove("aberto");
+  $("#painel").setAttribute("aria-hidden","true");
+  $("#overlay").classList.remove("aberto");
+}
+
+/* ---------------------------------------------------------------------------
+   12. CONFIGURAÇÕES
+   ------------------------------------------------------------------------ */
+
+function renderConfig(){
+  const c = estado.config;
+  $("#conteudo").innerHTML = `
+    <h1 class="pagina">Configurações</h1>
+    <div class="cfg-grid">
+
+      <section class="card">
+        <div class="card-tit"><h2>Prazos da régua</h2><span class="sub">dias corridos</span></div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Follow-up 2</b><small>dias após a mensagem 1</small></div>
+          <input type="number" min="1" max="120" value="${c.prazo2}" data-prazo="prazo2">
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Follow-up 3</b><small>dias após a mensagem 2</small></div>
+          <input type="number" min="1" max="120" value="${c.prazo3}" data-prazo="prazo3">
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Encerramento</b><small>dias após a mensagem 3</small></div>
+          <input type="number" min="1" max="365" value="${c.prazo4}" data-prazo="prazo4">
+        </div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:12px">Mudar aqui recalcula na hora quem está vencido. Nenhum histórico é perdido.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-tit"><h2>Dados</h2></div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Importar planilha (.xlsx)</b><small>merge por telefone + nome; preserva seu histórico</small></div>
+          <button class="btn btn-sm btn-primario" data-acao="importar-xlsx">Importar</button>
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Exportar backup JSON</b><small>${estado.leads.length} leads + todo o histórico</small></div>
+          <button class="btn btn-sm" data-acao="exportar-json">Exportar</button>
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Importar backup JSON</b><small>substitui tudo que está salvo agora</small></div>
+          <button class="btn btn-sm" data-acao="importar-json">Restaurar</button>
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Bloquear o painel</b><small>volta a pedir o código de liberação</small></div>
+          <button class="btn btn-sm" data-acao="bloquear">Bloquear agora</button>
+        </div>
+        <div class="cfg-linha">
+          <div class="tx"><b>Apagar tudo</b><small>leads, histórico e observações</small></div>
+          <button class="btn btn-sm btn-perigo" data-acao="apagar">Apagar</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-tit">
+          <h2>Links de pagamento (Asaas)</h2>
+          <button class="btn btn-sm btn-primario" data-novo-plano style="margin-left:auto">Adicionar</button>
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);line-height:1.65;margin-bottom:14px">
+          Crie os links dos seus planos no painel do Asaas e cole aqui. O botão <b style="color:var(--text)">Cobrar</b>
+          usa esses links. Nenhuma chave de API é guardada neste arquivo — se fosse, qualquer pessoa
+          com acesso a ele entraria na sua conta de cobrança.
+        </div>
+        ${estado.planos.length
+          ? estado.planos.map(p => `
+            <div class="plano-lin">
+              <div class="tx"><b>${esc(p.nome)} · ${fmtMoeda(p.valor)}</b><small>${esc(p.url)}</small></div>
+              <button class="btn btn-sm" data-editar-plano="${esc(p.id)}">Editar</button>
+              <button class="btn btn-sm btn-perigo" data-excluir-plano="${esc(p.id)}">×</button>
+            </div>`).join("")
+          : `<div class="vazio">Nenhum link cadastrado. Sem eles, o botão Cobrar fica desativado.</div>`}
+      </section>
+
+      <section class="card">
+        <div class="card-tit"><h2>Mensagem de cobrança</h2></div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-bottom:11px">
+          Campos disponíveis: <b style="color:var(--text)">{cliente}</b>, <b style="color:var(--text)">{descricao}</b>,
+          <b style="color:var(--text)">{valor}</b>, <b style="color:var(--text)">{vencimento}</b>, <b style="color:var(--text)">{link}</b>.
+        </div>
+        <textarea class="obs" style="min-height:150px" data-msg-cobranca>${esc(estado.config.msgCobranca || MSG_COBRANCA_PADRAO)}</textarea>
+        <div style="display:flex;gap:9px;margin-top:10px">
+          <span class="salvo" id="msg-salvo" style="align-self:center">salvo ✓</span>
+          <button class="btn btn-sm" data-restaurar-msg style="margin-left:auto">Restaurar padrão</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-tit"><h2>Onde seus dados moram</h2></div>
+        <div class="nota-aviso">
+          <b>Atenção:</b> tudo fica no <b>localStorage deste navegador</b>, neste computador.
+          Se você limpar o histórico/cookies, usar aba anônima, trocar de navegador ou de máquina,
+          <b>os dados somem</b> e não tem como recuperar.
+          Faça <b>Exportar JSON</b> ao final de cada dia de prospecção e guarde o arquivo.
+        </div>
+        <div style="font-size:12.5px;color:var(--text-dim);margin-top:14px;line-height:1.7">
+          <div><b style="color:var(--text)">Leads salvos:</b> ${estado.leads.length}</div>
+          <div><b style="color:var(--text)">Envios registrados:</b> ${estado.leads.reduce((s,l)=>s+(l.historico||[]).length,0)}</div>
+          <div><b style="color:var(--text)">Contratos:</b> ${estado.contratos.length} · <b style="color:var(--text)">cobranças:</b> ${todasCobrancas().length}</div>
+          <div><b style="color:var(--text)">Última importação:</b> ${estado.importadoEm ? new Date(estado.importadoEm).toLocaleString("pt-BR") : "—"}</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-tit"><h2>Como este painel funciona</h2></div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.75">
+          <p style="margin:0 0 10px">Ele <b style="color:var(--text)">não envia nada sozinho</b>. O botão de WhatsApp só abre a conversa com o texto já preenchido — quem aperta enviar é você. Depois ele pergunta se pode marcar como enviada.</p>
+          <p style="margin:0 0 10px">O funil é calculado por <b style="color:var(--text)">dias corridos</b> a partir da data do último envio que você confirmou.</p>
+          <p style="margin:0">Escolher um <b style="color:var(--text)">status manual</b> (Respondeu, Em negociação, Proposta enviada, Fechado, Descartado) congela a régua automática desse lead.</p>
+        </div>
+      </section>
+    </div>`;
+}
+
+/* ---------------------------------------------------------------------------
+   13. EXPORTAR / IMPORTAR JSON
+   ------------------------------------------------------------------------ */
+
+function exportarJSON(){
+  const blob = new Blob([JSON.stringify(estado, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup-prospeccao-${hojeISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  toast("Backup exportado. Guarde esse arquivo.");
+}
+
+async function importarJSON(arquivo){
+  try{
+    const dados = JSON.parse(await arquivo.text());
+    if(!dados || !Array.isArray(dados.leads)) throw new Error("estrutura inesperada");
+    const ok = await confirmar({
+      titulo:"Restaurar backup?",
+      texto:`O backup tem <b>${dados.leads.length} leads</b>. Isso substitui tudo que está salvo agora neste navegador.`,
+      ok:"Restaurar", perigo:true
+    });
+    if(!ok) return;
+    estado.leads       = dados.leads;
+    estado.contratos   = Array.isArray(dados.contratos) ? dados.contratos : [];
+    estado.planos      = Array.isArray(dados.planos)    ? dados.planos    : [];
+    estado.config      = Object.assign(
+      { prazo2:2, prazo3:5, prazo4:10, mesesGerar:12, msgCobranca:MSG_COBRANCA_PADRAO },
+      dados.config || {});
+    estado.importadoEm = dados.importadoEm || new Date().toISOString();
+    sincronizarMensalidades();
+    salvar();
+    toast(`${estado.leads.length} leads restaurados.`);
+    iniciarApp();
+  }catch(e){
+    console.error(e);
+    toast("Arquivo JSON inválido.", true);
+  }
+}
+
+async function apagarTudo(){
+  const p1 = await confirmar({
+    titulo:"Apagar tudo?",
+    texto:`Isso remove os <b>${estado.leads.length} leads</b> com todo o histórico de contatos e observações, ` +
+          `e também os <b>${estado.contratos.length} contrato${estado.contratos.length===1?"":"s"}</b> ` +
+          `com todo o financeiro (${todasCobrancas().length} cobranças, inclusive as já pagas). Não tem desfazer.`,
+    ok:"Continuar", perigo:true
+  });
+  if(!p1) return;
+  const p2 = await confirmar({
+    titulo:"Confirmação final",
+    texto:"Para confirmar, digite <b>APAGAR</b> abaixo. Se você não exportou um JSON, cancele e exporte antes.",
+    ok:"Apagar definitivamente", perigo:true, exigirTexto:"APAGAR"
+  });
+  if(!p2) return;
+  localStorage.removeItem(CHAVE_LS);
+  estado = {
+    leads:[], contratos:[], planos:[],
+    config:{ prazo2:2, prazo3:5, prazo4:10, mesesGerar:12, msgCobranca:MSG_COBRANCA_PADRAO },
+    importadoEm:null
+  };
+  toast("Tudo apagado.");
+  iniciarApp();
+}
+
+/* ---------------------------------------------------------------------------
+   14. NAVEGAÇÃO E RENDER GERAL
+   ------------------------------------------------------------------------ */
+
+function irPara(tela){
+  ui.tela = tela;
+  $$(".rail-btn[data-tela]").forEach(b => b.classList.toggle("ativo", b.dataset.tela === tela));
+  renderTudo();
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+function renderTudo(){
+  if(!estado.leads.length){ mostrarInicio(); return; }
+  const k = calcularKPIs();
+  $("#pend-n").textContent = k.vencidos;
+  $("#pill-pend").classList.toggle("zerado", k.vencidos === 0);
+  const badge = $("#rail-badge");
+  badge.style.display = k.vencidos ? "block" : "none";
+
+  const fin = kpisFinanceiros();
+  $("#rail-badge-fin").style.display = fin.qtdAtrasadas ? "block" : "none";
+
+  if(ui.tela === "home")            renderHome();
+  else if(ui.tela === "leads")      renderLeads();
+  else if(ui.tela === "financeiro") renderFinanceiro();
+  else                              renderConfig();
+}
+
+function mostrarInicio(){
+  $("#tela-inicio").style.display = "grid";
+  $("#app").style.display = "none";
+}
+
+function iniciarApp(){
+  if(!estaLiberado()) return mostrarTrava();
+  if(!estado.leads.length) return mostrarInicio();
+  $("#tela-inicio").style.display = "none";
+  $("#app").style.display = "flex";
+  renderTudo();
+}
+
+/* ---------------------------------------------------------------------------
+   15. EVENTOS (delegação global)
+   ------------------------------------------------------------------------ */
+
+document.addEventListener("click", async (ev) => {
+  const alvo = (s) => ev.target.closest(s);
+  let el;
+
+  // --- navegação lateral ---
+  if((el = alvo(".rail-btn[data-tela]"))) return irPara(el.dataset.tela);
+
+  // --- ações de arquivo ---
+  if((el = alvo('[data-acao="importar-xlsx"]'))) return $("#file-xlsx").click();
+  if((el = alvo('[data-acao="importar-json"]'))) return $("#file-json").click();
+  if((el = alvo('[data-acao="exportar-json"]'))) return exportarJSON();
+  if((el = alvo('[data-acao="apagar"]')))        return apagarTudo();
+  if((el = alvo('[data-acao="bloquear"]')))      return bloquearPainel();
+
+  // --- botão de WhatsApp (tem prioridade sobre o clique do card) ---
+  if((el = alvo("[data-wa]"))){
+    ev.stopPropagation();
+    const lead = estado.leads.find(l => l.id === el.dataset.wa);
+    if(lead) await abrirWhatsApp(lead, parseInt(el.dataset.etapa, 10));
+    return;
+  }
+
+  // --- financeiro: contratos ---
+  if(alvo("[data-novo-contrato]"))            return abrirFormContrato(null, null);
+  if((el = alvo("[data-contrato-de-lead]")))  { fecharPainel(); return abrirFormContrato(el.dataset.contratoDeLead, null); }
+  if((el = alvo("[data-editar-contrato]")))   { fecharPainel(); return abrirFormContrato(null, el.dataset.editarContrato); }
+
+  // --- financeiro: cobranças ---
+  if((el = alvo("[data-cobrar]"))){
+    ev.stopPropagation();
+    return abrirCobrancaWhatsApp(el.dataset.cobrar);
+  }
+  if((el = alvo("[data-pagar]"))){
+    ev.stopPropagation();
+    const achado = acharCobranca(el.dataset.pagar);
+    if(!achado) return;
+    const ok = await confirmar({
+      titulo:"Confirmar recebimento?",
+      texto:`<b>${esc(achado.contrato.cliente)}</b><br>${esc(achado.cob.descricao)} — <b>${fmtMoeda(achado.cob.valor)}</b><br><br>Vai entrar no faturamento de hoje.`,
+      ok:"Sim, recebi"
+    });
+    if(!ok) return;
+    marcarPaga(el.dataset.pagar, true);
+    renderTudo();
+    if(ui.leadAberto) abrirPainel(ui.leadAberto);
+    toast(`${fmtMoeda(achado.cob.valor)} registrado como recebido.`);
+    return;
+  }
+  if((el = alvo("[data-despagar]"))){
+    ev.stopPropagation();
+    marcarPaga(el.dataset.despagar, false);
+    renderTudo();
+    if(ui.leadAberto) abrirPainel(ui.leadAberto);
+    toast("Pagamento desmarcado.");
+    return;
+  }
+
+  // --- links de pagamento (planos do Asaas) ---
+  if(alvo("[data-novo-plano]"))          return abrirFormPlano(null);
+  if((el = alvo("[data-editar-plano]"))) return abrirFormPlano(el.dataset.editarPlano);
+  if((el = alvo("[data-excluir-plano]"))){
+    const p = estado.planos.find(x => x.id === el.dataset.excluirPlano);
+    if(!p) return;
+    const usado = estado.contratos.filter(c => c.planoId === p.id).length;
+    const ok = await confirmar({
+      titulo:"Excluir este link?",
+      texto:`<b>${esc(p.nome)}</b>` + (usado ? `<br><br>Ele está vinculado a <b>${usado} contrato${usado>1?"s":""}</b>. Esses contratos ficam sem link e o botão Cobrar deles é desativado até você vincular outro.` : ""),
+      ok:"Excluir", perigo:true
+    });
+    if(!ok) return;
+    estado.planos = estado.planos.filter(x => x.id !== p.id);
+    estado.contratos.forEach(c => { if(c.planoId === p.id) c.planoId = null; });
+    salvar(); renderTudo(); toast("Link excluído.");
+    return;
+  }
+  if(alvo("[data-restaurar-msg]")){
+    estado.config.msgCobranca = MSG_COBRANCA_PADRAO;
+    salvar(); renderConfig(); toast("Mensagem restaurada para o padrão.");
+    return;
+  }
+
+  // --- copiar mensagem ---
+  if((el = alvo("[data-copiar]"))){
+    const lead = estado.leads.find(l => l.id === ui.leadAberto);
+    const txt2 = lead && lead.msgs[parseInt(el.dataset.copiar,10) - 1];
+    if(!txt2) return;
+    try{ await navigator.clipboard.writeText(txt2); toast("Mensagem copiada."); }
+    catch(e){
+      // fallback para file:// em navegadores sem clipboard API
+      const ta = document.createElement("textarea");
+      ta.value = txt2; document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); ta.remove(); toast("Mensagem copiada.");
+    }
+    return;
+  }
+
+  // --- desmarcar etapa registrada por engano ---
+  if((el = alvo("[data-desmarcar]"))){
+    const lead = estado.leads.find(l => l.id === ui.leadAberto);
+    if(!lead) return;
+    const etapa = parseInt(el.dataset.desmarcar, 10);
+    const ok = await confirmar({
+      titulo:`Desmarcar a mensagem ${etapa}?`,
+      texto:"O registro de envio dessa etapa some e o funil volta ao ponto anterior.",
+      ok:"Desmarcar", perigo:true
+    });
+    if(!ok) return;
+    lead.historico = (lead.historico||[]).filter(h => h.etapa !== etapa);
+    salvar(); renderTudo(); abrirPainel(lead.id);
+    toast(`Mensagem ${etapa} desmarcada.`);
+    return;
+  }
+
+  // --- expandir texto da mensagem ---
+  if((el = alvo("[data-expandir]"))){
+    const box = el.closest(".msg-box").querySelector("[data-msg-txt]");
+    const aberto = box.classList.toggle("aberto");
+    el.textContent = aberto ? "recolher ↑" : "ver mensagem inteira ↓";
+    return;
+  }
+
+  // --- fechar painel ---
+  if(alvo("[data-fechar-painel]") || ev.target.id === "overlay") return fecharPainel();
+
+  // --- abrir lead ---
+  if((el = alvo("[data-lead]"))) return abrirPainel(el.dataset.lead);
+
+  // --- período do gráfico ---
+  if((el = alvo("[data-periodo]"))){ ui.periodo = parseInt(el.dataset.periodo,10); return renderHome(); }
+
+  // --- visão grade/tabela ---
+  if((el = alvo("[data-visao]"))){ ui.visao = el.dataset.visao; return renderLeads(); }
+
+  // --- limpar filtros ---
+  if(alvo("[data-limpar]")){
+    ui.filtros = { cidade:"", nicho:"", prioridade:"", site:"", estagio:"" };
+    ui.busca = ""; $("#busca-topo").value = "";
+    return renderLeads();
+  }
+
+  // --- atalhos que levam para a tela de Leads já filtrada ---
+  if((el = alvo("[data-filtro-estagio]"))){
+    ui.filtros = { cidade:"", nicho:"", prioridade:"", site:"", estagio: el.dataset.filtroEstagio };
+    return irPara("leads");
+  }
+  if((el = alvo("[data-filtro-status]"))){
+    ui.filtros = { cidade:"", nicho:"", prioridade:"", site:"", estagio:"finalizado" };
+    return irPara("leads");
+  }
+  if((el = alvo("[data-filtro-prio]"))){
+    ui.filtros = { cidade:"", nicho:"", prioridade: el.dataset.filtroPrio, site:"", estagio:"" };
+    return irPara("leads");
+  }
+  if((el = alvo("[data-filtro-cidade]"))){
+    ui.filtros = { cidade: el.dataset.filtroCidade, nicho:"", prioridade:"", site:"", estagio:"" };
+    return irPara("leads");
+  }
+  if((el = alvo("[data-ir]"))) return irPara(el.dataset.ir);
+  if(alvo("#pill-pend")){
+    ui.filtros = { cidade:"", nicho:"", prioridade:"", site:"", estagio:"vencidos" };
+    return irPara("leads");
+  }
+});
+
+/* --- selects e inputs --- */
+document.addEventListener("change", (ev) => {
+  const t = ev.target;
+
+  if(t.dataset.filtro){ ui.filtros[t.dataset.filtro] = t.value; return renderLeads(); }
+  if(t.hasAttribute("data-ordem")){ ui.ordem = t.value; return renderLeads(); }
+
+  if(t.hasAttribute("data-status")){
+    const lead = estado.leads.find(l => l.id === ui.leadAberto);
+    if(!lead) return;
+    lead.statusManual = t.value;
+    salvar(); renderTudo(); abrirPainel(lead.id);
+    toast(t.value ? `Status: ${t.value}` : "Voltou para a régua automática.");
+    return;
+  }
+
+  if(t.dataset.prazo){
+    const v = Math.max(1, parseInt(t.value,10) || 1);
+    estado.config[t.dataset.prazo] = v;
+    t.value = v; salvar(); renderTudo();
+    toast("Prazo atualizado. Funil recalculado.");
+    return;
+  }
+
+  if(t.id === "file-xlsx" && t.files[0]){ const f = t.files[0]; t.value = ""; importarPlanilha(f); return; }
+  if(t.id === "file-json" && t.files[0]){ const f = t.files[0]; t.value = ""; importarJSON(f);     return; }
+});
+
+/* --- observações: salva enquanto digita (com atraso) --- */
+let obsTimer = null;
+document.addEventListener("input", (ev) => {
+  const t = ev.target;
+
+  if(t.hasAttribute("data-obs")){
+    clearTimeout(obsTimer);
+    obsTimer = setTimeout(() => {
+      const lead = estado.leads.find(l => l.id === ui.leadAberto);
+      if(!lead) return;
+      lead.obs = t.value;
+      salvar();
+      const s = $("#obs-salvo");
+      if(s){ s.classList.add("on"); setTimeout(() => s.classList.remove("on"), 1400); }
+    }, 450);
+    return;
+  }
+
+  if(t.hasAttribute("data-msg-cobranca")){
+    clearTimeout(obsTimer);
+    obsTimer = setTimeout(() => {
+      estado.config.msgCobranca = t.value;
+      salvar();
+      const s = $("#msg-salvo");
+      if(s){ s.classList.add("on"); setTimeout(() => s.classList.remove("on"), 1400); }
+    }, 450);
+    return;
+  }
+
+  if(t.id === "busca-topo"){
+    ui.busca = t.value;
+    if(ui.tela !== "leads"){ ui.tela = "leads"; $$(".rail-btn[data-tela]").forEach(b => b.classList.toggle("ativo", b.dataset.tela === "leads")); }
+    renderLeads();
+  }
+});
+
+/* --- tela de liberação --- */
+$("#trava-entrar").addEventListener("click", tentarLiberar);
+$("#trava-codigo").addEventListener("keydown", (ev) => {
+  if(ev.key === "Enter") tentarLiberar();
+});
+
+/* --- teclado --- */
+document.addEventListener("keydown", (ev) => {
+  if(ev.key === "Escape" && ui.leadAberto) fecharPainel();
+  if((ev.key === "/" || (ev.key === "k" && (ev.ctrlKey || ev.metaKey))) && document.activeElement !== $("#busca-topo")){
+    ev.preventDefault(); $("#busca-topo").focus();
+  }
+});
+
+/* ---------------------------------------------------------------------------
+   16. BOOT
+   ------------------------------------------------------------------------ */
+carregar();
+iniciarApp();
+</script>
+</body>
+</html>

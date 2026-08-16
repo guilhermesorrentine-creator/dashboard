@@ -1,0 +1,10 @@
+# Dados de leads — informação pessoal de terceiros, não versionar.
+# O dashboard é alimentado importando a planilha localmente.
+*.xlsx
+*.pdf
+
+# Backups exportados pelo painel
+backup-prospeccao-*.json
+
+# Arquivos de ambiente/ferramentas
+.claude/
