@@ -1,16 +1,20 @@
 # Dashboard de Prospecção
 
 Painel pessoal de prospecção e financeiro para venda de sites a clínicas e
-consultórios de saúde/estética. Arquivo único (`dashboard-prospeccao.html`) —
-abre direto no navegador, sem servidor, sem instalação, funciona offline.
+consultórios de saúde/estética. Arquivo único (`index.html`) — abre direto no
+navegador, sem servidor, sem instalação, funciona offline.
+
+**Online:** https://guilhermesorrentine-creator.github.io/dashboard/
 
 ## Como usar
 
-1. Abra `dashboard-prospeccao.html` com dois cliques.
+1. Abra a URL acima (funciona no celular) ou o `index.html` com dois cliques.
 2. Digite o código de liberação.
 3. Importe a planilha de leads (`.xlsx`, aba `Leads`) pelo botão **Importar planilha**.
-4. Os dados ficam salvos no `localStorage` do navegador. Faça **Exportar JSON**
-   regularmente como backup (em Ajustes).
+4. Os dados ficam salvos no `localStorage` do navegador **daquele aparelho** —
+   computador e celular não se sincronizam sozinhos. Para levar os dados de um
+   para o outro, use **Exportar JSON** num e **Importar JSON** no outro (em
+   Ajustes). Exporte regularmente como backup de qualquer forma.
 
 ## O que ele faz
 
